@@ -17,8 +17,10 @@ export function dbPath() {
 export function openDb(file = dbPath()) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const db = new Database(file);
-  db.exec('PRAGMA journal_mode = WAL');
+  // Najpierw busy_timeout: zmiana journal_mode wymaga wyłącznej blokady, a dwie aplikacje
+  // (albo workery) otwierają ten sam plik równocześnie.
   db.exec('PRAGMA busy_timeout = 5000');
+  db.exec('PRAGMA journal_mode = WAL');
   db.exec('PRAGMA foreign_keys = ON');
   return db;
 }

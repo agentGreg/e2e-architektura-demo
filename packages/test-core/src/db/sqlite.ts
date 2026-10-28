@@ -35,8 +35,10 @@ export function dbPath(): string {
 
 export function openDb(file = dbPath()): Db {
   const raw = new Database(file);
-  raw.exec('PRAGMA journal_mode = WAL');
+  // Najpierw busy_timeout: zmiana journal_mode wymaga wyłącznej blokady, a dwie aplikacje
+  // (albo workery) otwierają ten sam plik równocześnie.
   raw.exec('PRAGMA busy_timeout = 5000');
+  raw.exec('PRAGMA journal_mode = WAL');
   raw.exec('PRAGMA foreign_keys = ON');
   const params = (p: unknown[]) => p as Parameters<SqliteTypes.StatementSync['all']>;
   return {
