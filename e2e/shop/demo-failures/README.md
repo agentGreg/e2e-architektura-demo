@@ -5,7 +5,7 @@ Projekt `demo-failures` (nie biegnie domyślnie) zawiera testy, które padają z
 | Plik | Kategoria | Mechanizm |
 |---|---|---|
 | `collision.spec.ts` (i `tests/cart.spec.ts` na `main`) przy `--workers=4` | kolizja danych | wspólne konto i produkty o stałych nazwach (stan „przed” z 2A) |
-| `flaky.spec.ts` | flaky | komunikat znika po losowym czasie 1–2 s, test czeka stałe 1,5 s |
+| `flaky.spec.ts` | flaky | komunikat znika po losowym czasie 1–2 s, test czeka stałe 1,2 s (pada w ok. 80 % prób) |
 | `bug.spec.ts` | bug | aplikacja uruchomiona z `SHOP_BUG_TOTAL=1` liczy sumę koszyka bez ilości |
 | `permissions.spec.ts` | uprawnienia | test wchodzi do panelu admina na koncie bez roli admin |
 | `environment.spec.ts` | środowisko | test woła backoffice, którego konfiguracja sklepu nie uruchamia |
@@ -16,4 +16,4 @@ Generowanie raportów (udana próba + nieudana próba, każda z trace):
 pnpm demo:failures
 ```
 
-Wynik: `e2e/shop/demo-runs/ok/` i `e2e/shop/demo-runs/failed/` (każdy z `playwright-report/`, `results.json`, `junit.xml`, `test-results/` z trace). Skill „analiza nieudanego buildu” dostaje ścieżkę do `failed/`.
+Wynik: `e2e/<app>/demo-runs/ok/` i `e2e/<app>/demo-runs/failed/` dla `shop` i `backoffice` (każdy z `playwright-report/`, `results.json`, `junit.xml`, `test-results/` z trace). Skill „analiza nieudanego buildu” dostaje ścieżkę do `failed/`. Próba nieudana biegnie z `--retries=1`, więc test, który przeszedł po retry, ma w `results.json` status `flaky` (kolizja też może tak wyglądać; rozstrzyga porównanie z próbą udaną i nazwy danych). Backoffice ma własny zestaw: `e2e/backoffice/demo-failures/`.

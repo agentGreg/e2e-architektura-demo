@@ -41,7 +41,7 @@ Inne polecenia:
 
 ```powershell
 pnpm dev                       # obie aplikacje w jednym terminalu (http://localhost:4100, :4200)
-pnpm test                      # oba projekty e2e
+pnpm test                      # oba projekty e2e (backoffice biegnie także, gdy sklep padnie)
 pnpm --filter e2e-shop exec playwright test --workers=4 --repeat-each=2   # kolizje na main
 pnpm --filter e2e-shop exec playwright test --ui
 pnpm db:reset                  # świeża baza (przy zatrzymanych aplikacjach)
@@ -54,10 +54,10 @@ Jeśli po `pnpm db:reset` testy zachowują się dziwnie, sprawdź, czy nie dzia�
 
 ## Claude Code i Playwright MCP
 
-Repo ma `.mcp.json` (zakres projektu) z serwerem `playwright` (`npx @playwright/mcp@latest --isolated --caps=testing`). Po otwarciu repo w Claude Code zatwierdź serwer, `claude mcp list` pokaże status. Ręcznie:
+Repo ma `.mcp.json` (zakres projektu) z serwerem `playwright` (`npx @playwright/mcp@latest --isolated --caps=testing`). Po otwarciu repo w Claude Code zatwierdź serwer; `claude mcp list` w katalogu klonu pokaże status. Nie dodawaj drugiego serwera `playwright` przez `claude mcp add` (wpis lokalny przesłania ten z repo); jeśli chcesz mieć go poza repo, podaj te same flagi:
 
 ```powershell
-claude mcp add playwright -- npx @playwright/mcp@latest
+claude mcp add playwright --scope user -- npx @playwright/mcp@latest --isolated --caps=testing
 ```
 
 Jeśli na Windows serwer stdio przez `npx` nie startuje, w `.mcp.json` użyj wariantu:
@@ -66,7 +66,7 @@ Jeśli na Windows serwer stdio przez `npx` nie startuje, w `.mcp.json` użyj war
 { "mcpServers": { "playwright": { "command": "cmd", "args": ["/c", "npx", "@playwright/mcp@latest", "--isolated", "--caps=testing"] } } }
 ```
 
-Plugin sekcji: `.claude/settings.json` zna marketplace `qa-sekcja` (to repo na GitHubie) i włącza `qa-standards`; po zaufaniu folderowi Claude Code zaproponuje instalację. Lokalnie z klonu:
+Plugin sekcji: `.claude/settings.json` deklaruje marketplace `qa-sekcja` ze źródłem `directory ./` (katalog klonu), bez wymuszonych pluginów (`enabledPlugins` puste). Plugin `qa-standards` instalujesz sam w ćwiczeniu 3B:
 
 ```powershell
 claude plugin validate .
