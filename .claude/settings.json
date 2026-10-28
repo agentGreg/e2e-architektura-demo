@@ -1,12 +1,13 @@
 {
   "extraKnownMarketplaces": {
     "qa-sekcja": {
-      "source": { "source": "github", "repo": "agentGreg/e2e-architektura-demo" }
+      "source": {
+        "source": "directory",
+        "path": "./"
+      }
     }
   },
-  "enabledPlugins": {
-    "qa-standards@qa-sekcja": true
-  },
+  "enabledPlugins": {},
   "hooks": {
     "PreToolUse": [
       {
