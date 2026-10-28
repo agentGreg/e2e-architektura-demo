@@ -1,0 +1,104 @@
+# PRZYKŁAD, nie testowany w ADO. Macierz project × shard z dokumentacji Playwright (docs/ci)
+# plus zadanie scalające, którego w przykładzie Azure w dokumentacji nie ma: to nasze tłumaczenie
+# przykładu z GitHub Actions. DevOpsi weryfikują u siebie (lista wymagań: docs/pipeline-requirements.md).
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  CI: 'true'
+  E2E_RUN_ID: $(Build.BuildId)
+
+stages:
+  - stage: Test
+    jobs:
+      - job: e2e
+        container: mcr.microsoft.com/playwright:v1.64.1-noble
+        strategy:
+          matrix:
+            shop-1:
+              app: shop
+              shard: 1/2
+            shop-2:
+              app: shop
+              shard: 2/2
+            backoffice-1:
+              app: backoffice
+              shard: 1/2
+            backoffice-2:
+              app: backoffice
+              shard: 2/2
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: '24'
+            displayName: 'Node 24'
+          - script: corepack enable && pnpm install --frozen-lockfile
+            displayName: 'pnpm install'
+          - script: pnpm --filter e2e-$(app) exec playwright test --shard=$(shard)
+            displayName: 'Playwright: $(app) shard $(shard)'
+            env:
+              CI: 'true'
+              E2E_RUN_ID: $(Build.BuildId)
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish blob report'
+            inputs:
+              targetPath: e2e/$(app)/blob-report
+              artifact: blob-report-$(app)-$(System.JobPositionInPhase)
+              publishLocation: 'pipeline'
+            condition: succeededOrFailed()
+
+      - job: quarantine
+        displayName: 'Kwarantanna (nie wpływa na status)'
+        container: mcr.microsoft.com/playwright:v1.64.1-noble
+        continueOnError: true
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: '24'
+          - script: corepack enable && pnpm install --frozen-lockfile
+          - script: pnpm --filter e2e-shop exec playwright test --grep @quarantine --repeat-each=3
+            env:
+              CI: 'true'
+
+  - stage: Report
+    dependsOn: Test
+    condition: succeededOrFailed()
+    jobs:
+      - job: merge
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: '24'
+          - script: corepack enable && pnpm install --frozen-lockfile
+            displayName: 'pnpm install'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download all blob reports'
+            inputs:
+              patterns: 'blob-report-*/**'
+              path: $(Pipeline.Workspace)/blobs
+          - script: |
+              mkdir -p all-blob-reports
+              find $(Pipeline.Workspace)/blobs -name '*.zip' -exec cp {} all-blob-reports/ \;
+              pnpm exec playwright merge-reports --reporter html,junit ./all-blob-reports
+            displayName: 'merge-reports'
+            env:
+              PLAYWRIGHT_JUNIT_OUTPUT_FILE: playwright-report/junit.xml
+          - task: PublishTestResults@2
+            displayName: 'Publish JUnit'
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'playwright-report/junit.xml'
+              mergeTestResults: true
+              failTaskOnFailedTests: true
+              testRunTitle: 'E2E'
+            condition: succeededOrFailed()
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish HTML report'
+            inputs:
+              targetPath: playwright-report
+              artifact: playwright-report
+              publishLocation: 'pipeline'
+            condition: succeededOrFailed()

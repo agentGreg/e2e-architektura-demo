@@ -1,0 +1,67 @@
+# Przykład: macierz shardów + zadanie scalające (wzór z docs Playwright, test-sharding).
+# Składnia zgodna z dokumentacją 1.64; nie uruchamiany w ramach szkolenia.
+name: E2E
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.64.1-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [shop, backoffice]
+        shardIndex: [1, 2]
+        shardTotal: [2]
+    env:
+      CI: 'true'
+      # runId do prefiksu danych testowych (e2e_<run>_w<worker>_...)
+      E2E_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: Run shard
+        run: pnpm --filter e2e-${{ matrix.app }} exec playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - name: Upload blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: blob-report-${{ matrix.app }}-${{ matrix.shardIndex }}
+          path: e2e/${{ matrix.app }}/blob-report
+          retention-days: 1
+
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs: [e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: Download blob reports
+        uses: actions/download-artifact@v5
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+      - name: Merge into HTML + JUnit
+        run: pnpm exec playwright merge-reports --reporter html,junit ./all-blob-reports
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_FILE: playwright-report/junit.xml
+      - uses: actions/upload-artifact@v5
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
