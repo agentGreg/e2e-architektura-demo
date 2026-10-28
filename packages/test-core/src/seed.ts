@@ -1,33 +1,36 @@
-// Seed w stanie "przed" (ćwiczenie 2A). Wstawia dane o STAŁYCH nazwach do istniejącej
-// bazy. Działa przy jednym workerze. Przy czterech workerach dwa procesy resetują
-// i modyfikują te same rekordy ("Szampon", "ORD-E2E-1"), więc testy padają.
-import type { Db } from './db';
+// Seed z izolacją (rozwiązanie 2A). Dane per worker z prefiksem `e2e_<run>_w<workerIndex>_`,
+// idempotentne (upsert po nazwie), sprzątane po prefiksie. Ten sam wzorzec działa na
+// dowolnym silniku: INSERT ... ON CONFLICT po stronie aplikacji, DELETE ... WHERE name LIKE 'e2e_<run>_%'.
+import crypto from 'node:crypto';
+import type { ShopApi, Product, User } from './api-client';
 
-export const FIXED_PRODUCTS = ['Szampon', 'Mydło', 'Pasta do zębów'] as const;
-export const FIXED_STOCK = 10;
+// Konta bazowe istnieją "od zawsze" w bazie testowej. Używamy ich tylko do operacji
+// administracyjnych (tworzenie danych) i w testach logowania; testy biznesowe dostają
+// własnego użytkownika per worker.
 export const FIXED_USER = { login: 'user', password: 'user123' } as const;
 export const FIXED_ADMIN = { login: 'admin', password: 'admin123' } as const;
+export const FIXED_PRODUCTS = ['Szampon', 'Mydło', 'Pasta do zębów'] as const;
+export const FIXED_STOCK = 10;
 
-/** Przywraca produkty bazowe do stanu wyjściowego i czyści koszyk użytkownika testowego. */
-export function seedShop(db: Db): void {
-  db.transaction(() => {
-    for (const name of FIXED_PRODUCTS) {
-      db.exec(
-        'INSERT INTO products (name, price_cents, stock) VALUES (?, 999, ?) ON CONFLICT(name) DO UPDATE SET stock = excluded.stock',
-        [name, FIXED_STOCK],
-      );
-    }
-    db.exec('DELETE FROM cart_items WHERE user_id = (SELECT id FROM users WHERE login = ?)', [FIXED_USER.login]);
-  });
+export interface WorkerUser extends User {
+  password: string;
 }
 
-/** Wstawia dwa zamówienia o stałych numerach dla testów backoffice. */
-export function seedOrders(db: Db): void {
-  db.transaction(() => {
-    db.exec("DELETE FROM orders WHERE number LIKE 'ORD-E2E-%'");
-    const user = db.one<{ id: number }>('SELECT id FROM users WHERE login = ?', [FIXED_USER.login])!;
-    const product = db.one<{ id: number }>('SELECT id FROM products WHERE name = ?', [FIXED_PRODUCTS[0]])!;
-    db.exec("INSERT INTO orders (number, user_id, product_id, qty, status) VALUES ('ORD-E2E-1', ?, ?, 1, 'new')", [user.id, product.id]);
-    db.exec("INSERT INTO orders (number, user_id, product_id, qty, status) VALUES ('ORD-E2E-2', ?, ?, 2, 'new')", [user.id, product.id]);
-  });
+/** Tworzy (albo odtwarza) użytkownika workera. Wołane raz na worker. */
+export async function seedWorkerUser(adminApi: ShopApi, prefix: string): Promise<WorkerUser> {
+  const password = 'e2e-' + crypto.randomBytes(6).toString('hex');
+  const user = await adminApi.upsertUser({ login: `${prefix}user`, password, role: 'user' });
+  return { ...user, password };
+}
+
+/** Produkt z unikalną nazwą w obrębie prefiksu; wołane per test. */
+export async function seedProduct(adminApi: ShopApi, prefix: string, overrides: Partial<Pick<Product, 'price_cents' | 'stock'>> = {}): Promise<Product> {
+  const name = `${prefix}p_${crypto.randomBytes(3).toString('hex')}`;
+  return adminApi.upsertProduct({ name, price_cents: overrides.price_cents ?? 999, stock: overrides.stock ?? FIXED_STOCK });
+}
+
+/** Sprząta wszystko z prefiksem: produkty, użytkownika (zamówienia, koszyk i sesje kasują się kaskadowo). */
+export async function cleanupPrefix(adminApi: ShopApi, prefix: string): Promise<void> {
+  await adminApi.deleteProducts(prefix);
+  await adminApi.deleteUsers(prefix);
 }

@@ -24,7 +24,8 @@ fs.rmSync(blobRoot, { recursive: true, force: true });
 fs.rmSync(mergedDir, { recursive: true, force: true });
 
 const playwrightCli = path.join(root, 'node_modules', '@playwright', 'test', 'cli.js');
-const env = { ...process.env, CI: '1', NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' ') };
+// Jeden runId dla wszystkich shardów, jak numer buildu na CI.
+const env = { ...process.env, CI: '1', E2E_RUN_ID: process.env.E2E_RUN_ID ?? String(Date.now()), NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' ') };
 
 function waitFor(url, ms = 20000) {
   const start = Date.now();
@@ -56,7 +57,8 @@ function runShard(i) {
   return new Promise((resolve) => {
     const child = spawn(
       process.execPath,
-      [playwrightCli, 'test', `--shard=${i}/${total}`, '--reporter=blob,line', ...extra],
+      // Osobny katalog wyników per shard: na jednej maszynie dwa shardy czyściłyby sobie nawzajem test-results.
+      [playwrightCli, 'test', `--shard=${i}/${total}`, '--reporter=blob,line', `--output=test-results-shard-${i}`, ...extra],
       { cwd: e2eDir, stdio: 'inherit', env: { ...env, PW_SKIP_WEBSERVER: '1', PLAYWRIGHT_BLOB_OUTPUT_DIR: outDir } },
     );
     child.on('exit', (code) => resolve(code ?? 1));

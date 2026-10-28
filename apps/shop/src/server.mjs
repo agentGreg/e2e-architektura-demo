@@ -179,6 +179,7 @@ app.get('/api/cart', (ctx, h) => {
   h.json(h.all('SELECT c.id, c.qty, p.id AS product_id, p.name FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.user_id = ?', [ctx.user.id]));
 });
 app.post('/api/cart', (ctx, h) => {
+  if (maintenanceGuard(ctx, h)) return;
   const denied = h.requireRole();
   if (denied) return h.json({ error: denied.error }, denied.status);
   h.run('INSERT INTO cart_items (user_id, product_id, qty) VALUES (?, ?, ?) ON CONFLICT(user_id, product_id) DO UPDATE SET qty = qty + excluded.qty', [ctx.user.id, ctx.body.product_id, Number(ctx.body.qty ?? 1)]);
@@ -197,6 +198,7 @@ app.get('/api/orders', (ctx, h) => {
   h.json(h.all('SELECT o.*, p.name AS product FROM orders o JOIN products p ON p.id = o.product_id WHERE o.user_id = ? ORDER BY o.id DESC', [ctx.user.id]));
 });
 app.post('/api/orders', (ctx, h) => {
+  if (maintenanceGuard(ctx, h)) return;
   const denied = h.requireRole();
   if (denied) return h.json({ error: denied.error }, denied.status);
   const product = h.get('SELECT * FROM products WHERE id = ? OR name = ?', [ctx.body.product_id ?? -1, ctx.body.product_name ?? '']);
@@ -207,6 +209,7 @@ app.post('/api/orders', (ctx, h) => {
   h.json(order, 201);
 });
 app.post('/api/checkout', (ctx, h) => {
+  if (maintenanceGuard(ctx, h)) return;
   const denied = h.requireRole();
   if (denied) return h.json({ error: denied.error }, denied.status);
   h.json({ numbers: checkout(h, ctx.user.id) }, 201);

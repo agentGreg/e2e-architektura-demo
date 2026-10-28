@@ -12,7 +12,7 @@ Monorepo demo do warsztatu „Architektura automatyzacji testów i agenci AI w s
 ## Zasady pisania testów
 
 - Warstwy: test (scenariusz) → język domeny (fixtures: `cart.add(...)`) → sterowanie (page objecty, klient API, baza). Selektor nie pojawia się w teście ani w fixture domenowym.
-- Dane testowe tworzy fixture, nie test. Nazwy z prefiksem uruchomienia i workera, sprzątanie w teardown fixture.
+- Dane testowe tworzy fixture, nie test. Nazwy z prefiksem uruchomienia, sharda i workera (`e2e_<run>_s<shard>_w<worker>_`), sprzątanie w teardown fixture.
 - Logowanie przez `storageState`, nie przez formularz w każdym teście.
 - Każdy test ma tag (`@smoke`, `@shop`, `@backoffice`, `@exclusive`, `@quarantine`).
 
