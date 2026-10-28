@@ -2,7 +2,7 @@
 // Sygnał w raporcie: 403 / "Brak uprawnień", nie błąd aplikacji.
 import { test, expect, FIXED_USER } from '@demo/test-core';
 
-test('dodanie produktu z panelu admina', { tag: '@demo' }, async ({ page }) => {
+test('dodanie produktu z panelu admina', { tag: ['@demo', '@demo-red'] }, async ({ page }) => {
   await page.goto('/login');
   await page.getByLabel('Login').fill(FIXED_USER.login);
   await page.getByLabel('Hasło').fill(FIXED_USER.password);

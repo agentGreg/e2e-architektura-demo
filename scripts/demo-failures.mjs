@@ -32,7 +32,7 @@ async function withShop(env, fn) {
   }
 }
 
-function runPlaywright(outDir, { workers, repeatEach, projects }) {
+function runPlaywright(outDir, { workers, repeatEach, projects, extraArgs = [] }) {
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
   const args = [
@@ -43,6 +43,7 @@ function runPlaywright(outDir, { workers, repeatEach, projects }) {
     '--trace=on',
     `--output=${path.join(outDir, 'test-results')}`,
     '--reporter=list,html,json,junit',
+    ...extraArgs,
   ];
   return new Promise((resolve) => {
     const child = spawn(process.execPath, args, {
@@ -63,7 +64,10 @@ function runPlaywright(outDir, { workers, repeatEach, projects }) {
 
 async function main() {
   console.log('\n== Próba udana (1 worker, bez błędu w aplikacji) ==\n');
-  const okCode = await withShop({}, () => runPlaywright(path.join(runsDir, 'ok'), { workers: 1, repeatEach: 1, projects: ['chromium'] }));
+  // Próba udana: te same testy co w nieudanej (w tym kolizyjne i 'bug'), bez zawsze czerwonych (@demo-red).
+  const okCode = await withShop({}, () =>
+    runPlaywright(path.join(runsDir, 'ok'), { workers: 1, repeatEach: 1, projects: ['chromium', 'demo-failures'], extraArgs: ['--grep-invert', '@demo-red'] }),
+  );
   console.log('\n== Próba nieudana (4 workery, SHOP_BUG_TOTAL=1, repeat-each=2) ==\n');
   const failedCode = await withShop({ SHOP_BUG_TOTAL: '1' }, () => runPlaywright(path.join(runsDir, 'failed'), { workers: 4, repeatEach: 2, projects: ['chromium', 'demo-failures'] }));
   console.log(`\nok: kod ${okCode} (oczekiwane 0), failed: kod ${failedCode} (oczekiwane 1)`);

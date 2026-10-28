@@ -12,3 +12,4 @@ offline/
 .claude/settings.local.json
 .DS_Store
 demo-runs/
+test-results-shard-*/
