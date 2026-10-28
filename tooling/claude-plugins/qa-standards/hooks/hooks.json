@@ -1,0 +1,17 @@
+{
+  "description": "Zakaz sekretów w pluginach: blokuje zapis tokenów/kluczy do tooling/claude-plugins/**.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/no-secrets.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

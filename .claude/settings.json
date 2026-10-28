@@ -1,0 +1,24 @@
+{
+  "extraKnownMarketplaces": {
+    "qa-sekcja": {
+      "source": { "source": "github", "repo": "agentGreg/e2e-architektura-demo" }
+    }
+  },
+  "enabledPlugins": {
+    "qa-standards@qa-sekcja": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-test-core.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

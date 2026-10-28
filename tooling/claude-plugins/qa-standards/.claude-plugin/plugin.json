@@ -1,0 +1,8 @@
+{
+  "name": "qa-standards",
+  "version": "0.2.0",
+  "description": "Standardy sekcji testów: przegląd testu Playwright wg checklisty, hook blokujący sekrety w pluginach, Playwright MCP do eksploracji ekranów.",
+  "author": { "name": "Grzegorz Brzezinka", "email": "greg@prosit.no" },
+  "keywords": ["playwright", "e2e", "qa", "standards"],
+  "license": "MIT"
+}

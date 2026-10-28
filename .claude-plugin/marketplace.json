@@ -1,0 +1,15 @@
+{
+  "name": "qa-sekcja",
+  "description": "Marketplace sekcji testów: pluginy ze standardami E2E (Playwright + Claude Code). Repo demo szkolenia.",
+  "owner": { "name": "Grzegorz Brzezinka", "email": "greg@prosit.no" },
+  "metadata": { "version": "1.0.0" },
+  "plugins": [
+    {
+      "name": "qa-standards",
+      "source": "./tooling/claude-plugins/qa-standards",
+      "description": "Standardy sekcji: przegląd testu wg checklisty, hook przeciw sekretom, Playwright MCP do eksploracji ekranów.",
+      "category": "testing",
+      "tags": ["playwright", "e2e", "qa"]
+    }
+  ]
+}
