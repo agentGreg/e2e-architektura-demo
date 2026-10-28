@@ -1,0 +1,14 @@
+{
+  "name": "e2e-backoffice",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@demo/test-core": "workspace:*",
+    "@playwright/test": "1.64.1"
+  }
+}
