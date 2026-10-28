@@ -20,5 +20,5 @@ Sekcja testów dostarcza konfigurację po stronie Playwright (`playwright.config
 | 14 | Baza testowa dostępna z agenta, z izolacją danych per uruchomienie | workery i shardy piszą równocześnie | prefiks z pkt 5; w repo demo plik SQLite per agent |
 
 Uwagi:
-- W XML JUnit test `flaky` wygląda jak `passed` (sprawdzone w źródle reportera, nie w docs); trend flaky bierzemy z raportu HTML/JSON albo `PLAYWRIGHT_JUNIT_INCLUDE_RETRIES=1` (nieudokumentowane, do sprawdzenia na Waszej wersji).
+- W XML JUnit test `flaky` wygląda jak `passed` (sprawdzone uruchomieniem na 1.64.1: `1 flaky` w konsoli, `failures="0"` w XML). `PLAYWRIGHT_JUNIT_INCLUDE_RETRIES=1` (nieudokumentowane, jest w źródle reportera) dopisuje nieudane próby jako `<failure>`, więc zielony build z retry pokaże w ADO czerwone testy. Trend flaky bierzemy z raportu HTML/JSON (`results.json`, status `flaky`).
 - Przykład Azure Pipelines w dokumentacji Playwright pokazuje macierz shardów bez zadania scalającego; zadanie scalające w `azure-pipelines.yml` jest naszym tłumaczeniem przykładu z GitHub Actions.
