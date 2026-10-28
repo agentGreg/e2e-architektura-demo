@@ -1,0 +1,13 @@
+{
+  "name": "@demo/test-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wspólna warstwa testowa: fixtures, klient API, seed, adapter bazy. Jedna wersja dla wszystkich projektów e2e (workspace:*).",
+  "exports": {
+    ".": "./src/index.ts",
+    "./db": "./src/db/index.ts"
+  },
+  "peerDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}
