@@ -46,7 +46,7 @@ export default defineConfig({
   ],
   // PW_SKIP_WEBSERVER=1: aplikacje już działają (np. scripts/run-shards.mjs startuje je raz dla wielu shardów).
   webServer: process.env.PW_SKIP_WEBSERVER ? undefined : {
-    command: `node ${path.join(root, 'apps', 'shop', 'src', 'server.mjs')}`,
+    command: `node "${path.join(root, 'apps', 'shop', 'src', 'server.mjs')}"`,
     url: `${SHOP_URL}/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,

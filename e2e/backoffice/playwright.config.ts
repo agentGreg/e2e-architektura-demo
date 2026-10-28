@@ -18,19 +18,29 @@ export default defineConfig({
     baseURL: BACKOFFICE_URL,
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      // Materiał do ćwiczenia 3A (scripts/demo-failures.mjs): testy padające z różnych powodów.
+      name: 'demo-failures',
+      default: false,
+      testDir: './demo-failures',
+      timeout: 10_000,
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
   // Backoffice steruje trybem konserwacji sklepu, więc testy potrzebują obu aplikacji.
   // PW_SKIP_WEBSERVER=1: aplikacje już działają (np. scripts/run-shards.mjs startuje je raz dla wielu shardów).
   webServer: process.env.PW_SKIP_WEBSERVER ? undefined : [
     {
-      command: `node ${path.join(root, 'apps', 'backoffice', 'src', 'server.mjs')}`,
+      command: `node "${path.join(root, 'apps', 'backoffice', 'src', 'server.mjs')}"`,
       url: `${BACKOFFICE_URL}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,
       cwd: root,
     },
     {
-      command: `node ${path.join(root, 'apps', 'shop', 'src', 'server.mjs')}`,
+      command: `node "${path.join(root, 'apps', 'shop', 'src', 'server.mjs')}"`,
       url: `${SHOP_URL}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,

@@ -11,7 +11,7 @@
     "dev:backoffice": "node apps/backoffice/src/server.mjs",
     "db:reset": "node scripts/db-reset.mjs",
     "seed:check": "node scripts/seed-check.mjs",
-    "test": "node scripts/check-node.mjs && pnpm test:shop && pnpm test:backoffice",
+    "test": "node scripts/check-node.mjs && pnpm -r --no-bail --workspace-concurrency=1 test",
     "test:shop": "pnpm --filter e2e-shop test",
     "test:backoffice": "pnpm --filter e2e-backoffice test",
     "test:smoke": "node scripts/check-node.mjs && pnpm --filter e2e-shop exec playwright test --grep @smoke --workers=1",

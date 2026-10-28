@@ -1,8 +1,8 @@
-// Kategoria: flaky. Komunikat znika po losowym czasie (1–2 s), test czeka stałe 1,5 s.
+// Kategoria: flaky. Komunikat znika po losowym czasie (1–2 s), test czeka stałe 1,2 s.
 // Przechodzi mniej więcej w połowie uruchomień; `--repeat-each=5` pokazuje to od razu.
 import { test, expect, FIXED_USER } from '@demo/test-core';
 
-test('komunikat o dodaniu do koszyka znika po 1,5 s', { tag: ['@demo', '@demo-red'] }, async ({ page, shopApi }) => {
+test('komunikat o dodaniu do koszyka znika po 1,2 s', { tag: ['@demo', '@demo-red'] }, async ({ page, shopApi }) => {
   await page.goto('/login');
   await page.getByLabel('Login').fill(FIXED_USER.login);
   await page.getByLabel('Hasło').fill(FIXED_USER.password);
@@ -10,7 +10,7 @@ test('komunikat o dodaniu do koszyka znika po 1,5 s', { tag: ['@demo', '@demo-re
 
   await page.getByRole('button', { name: 'Dodaj do koszyka: Szampon' }).click();
   await expect(page.getByTestId('flash')).toBeVisible();
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1200);
   await expect(page.getByTestId('flash'), 'komunikat powinien już zniknąć').toBeHidden({ timeout: 100 });
 
   await shopApi.login(FIXED_USER.login, FIXED_USER.password);
