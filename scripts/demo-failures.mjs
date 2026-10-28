@@ -1,17 +1,18 @@
-// Generuje materiał do ćwiczenia 3A ("analiza nieudanego buildu"): dwie próby tego samego
-// zestawu testów e2e/shop, z trace, raportem HTML, JSON i JUnit.
-//   ok/     : 1 worker, bez flagi błędu     -> wszystko zielone
-//   failed/ : 4 workery, SHOP_BUG_TOTAL=1   -> kolizje danych, flaky, bug, uprawnienia, środowisko
-// Użycie: pnpm demo:failures   (wynik w e2e/shop/demo-runs/{ok,failed}/)
+// Generuje materiał do ćwiczenia 3A ("analiza nieudanego buildu") dla obu projektów e2e:
+// dwie próby tego samego zestawu testów, z trace, raportem HTML, JSON i JUnit.
+//   ok/     : 1 worker, bez flagi błędu, bez testów zawsze czerwonych (@demo-red) -> zielone
+//   failed/ : 4 workery, --repeat-each=3, --retries=1, SHOP_BUG_TOTAL=1
+//             -> kolizje danych, flaky (status `flaky` po retry), bug, uprawnienia, środowisko
+// Użycie: pnpm demo:failures [shop|backoffice]   (wynik w e2e/<app>/demo-runs/{ok,failed}/)
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const e2eDir = path.join(root, 'e2e', 'shop');
-const runsDir = path.join(e2eDir, 'demo-runs');
 const cli = path.join(root, 'node_modules', '@playwright', 'test', 'cli.js');
 const baseEnv = { ...process.env, NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' ') };
+const only = process.argv[2];
+const apps = only ? [only] : ['shop', 'backoffice'];
 
 function waitFor(url, ms = 20000) {
   const start = Date.now();
@@ -22,17 +23,18 @@ function waitFor(url, ms = 20000) {
   });
 }
 
-async function withShop(env, fn) {
-  const server = spawn(process.execPath, [path.join(root, 'apps', 'shop', 'src', 'server.mjs')], { stdio: 'ignore', env: { ...baseEnv, ...env } });
+// Aplikacje startują raz na próbę (PW_SKIP_WEBSERVER=1 dla Playwrighta), żeby podać flagę błędu.
+async function withApps(names, env, fn) {
+  const servers = names.map((name) => spawn(process.execPath, [path.join(root, 'apps', name, 'src', 'server.mjs')], { stdio: 'ignore', env: { ...baseEnv, ...env } }));
   try {
-    await waitFor('http://localhost:4100/health');
+    for (const name of names) await waitFor(name === 'shop' ? 'http://localhost:4100/health' : 'http://localhost:4200/health');
     return await fn();
   } finally {
-    server.kill();
+    for (const s of servers) s.kill();
   }
 }
 
-function runPlaywright(outDir, { workers, repeatEach, projects, extraArgs = [] }) {
+function runPlaywright(app, outDir, { workers, repeatEach, retries, projects, extraArgs = [] }) {
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
   const args = [
@@ -40,6 +42,7 @@ function runPlaywright(outDir, { workers, repeatEach, projects, extraArgs = [] }
     ...projects.flatMap((p) => ['--project', p]),
     `--workers=${workers}`,
     `--repeat-each=${repeatEach}`,
+    `--retries=${retries}`,
     '--trace=on',
     `--output=${path.join(outDir, 'test-results')}`,
     '--reporter=list,html,json,junit',
@@ -47,7 +50,7 @@ function runPlaywright(outDir, { workers, repeatEach, projects, extraArgs = [] }
   ];
   return new Promise((resolve) => {
     const child = spawn(process.execPath, args, {
-      cwd: e2eDir,
+      cwd: path.join(root, 'e2e', app),
       stdio: 'inherit',
       env: {
         ...baseEnv,
@@ -62,16 +65,28 @@ function runPlaywright(outDir, { workers, repeatEach, projects, extraArgs = [] }
   });
 }
 
-async function main() {
-  console.log('\n== Próba udana (1 worker, bez błędu w aplikacji) ==\n');
-  // Próba udana: te same testy co w nieudanej (w tym kolizyjne i 'bug'), bez zawsze czerwonych (@demo-red).
-  const okCode = await withShop({}, () =>
-    runPlaywright(path.join(runsDir, 'ok'), { workers: 1, repeatEach: 1, projects: ['chromium', 'demo-failures'], extraArgs: ['--grep-invert', '@demo-red'] }),
+async function generate(app) {
+  const runsDir = path.join(root, 'e2e', app, 'demo-runs');
+  const appNames = app === 'backoffice' ? ['backoffice', 'shop'] : ['shop'];
+  const projects = ['chromium', 'demo-failures'];
+
+  console.log(`\n== ${app}: próba udana (1 worker, bez błędu w aplikacji, bez @demo-red) ==\n`);
+  const okCode = await withApps(appNames, {}, () =>
+    runPlaywright(app, path.join(runsDir, 'ok'), { workers: 1, repeatEach: 1, retries: 0, projects, extraArgs: ['--grep-invert', '@demo-red'] }),
   );
-  console.log('\n== Próba nieudana (4 workery, SHOP_BUG_TOTAL=1, repeat-each=2) ==\n');
-  const failedCode = await withShop({ SHOP_BUG_TOTAL: '1' }, () => runPlaywright(path.join(runsDir, 'failed'), { workers: 4, repeatEach: 2, projects: ['chromium', 'demo-failures'] }));
-  console.log(`\nok: kod ${okCode} (oczekiwane 0), failed: kod ${failedCode} (oczekiwane 1)`);
+  console.log(`\n== ${app}: próba nieudana (4 workery, repeat-each=3, retries=1, SHOP_BUG_TOTAL=1) ==\n`);
+  const failedCode = await withApps(appNames, { SHOP_BUG_TOTAL: '1' }, () =>
+    runPlaywright(app, path.join(runsDir, 'failed'), { workers: 4, repeatEach: 3, retries: 1, projects }),
+  );
+  console.log(`\n${app}: ok kod ${okCode} (oczekiwane 0), failed kod ${failedCode} (oczekiwane 1)`);
   console.log(`Raporty: ${path.relative(root, runsDir)}/{ok,failed}/playwright-report, results.json, junit.xml, test-results (trace)`);
+  return { okCode, failedCode };
+}
+
+async function main() {
+  const results = {};
+  for (const app of apps) results[app] = await generate(app);
+  console.log('\nPodsumowanie:', JSON.stringify(results));
 }
 main().catch((e) => {
   console.error(e);

@@ -72,7 +72,7 @@ export default defineConfig({
   webServer: process.env.PW_SKIP_WEBSERVER
     ? undefined
     : {
-        command: `node ${path.join(root, 'apps', 'shop', 'src', 'server.mjs')}`,
+        command: `node "${path.join(root, 'apps', 'shop', 'src', 'server.mjs')}"`,
         url: `${SHOP_URL}/health`,
         reuseExistingServer: !process.env.CI,
         timeout: 30_000,
