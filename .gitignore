@@ -1,0 +1,14 @@
+node_modules/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+test-results/
+playwright-report/
+blob-report/
+all-blob-reports/
+.auth/
+offline/
+*.zip
+.claude/settings.local.json
+.DS_Store
+demo-runs/

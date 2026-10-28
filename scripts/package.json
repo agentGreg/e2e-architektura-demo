@@ -1,0 +1,6 @@
+{
+  "name": "@demo/scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": { "@demo/app-kit": "workspace:*" }
+}
