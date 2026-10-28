@@ -15,4 +15,4 @@ claude plugin marketplace add C:\e2e\e2e-architektura-demo
 claude plugin install qa-standards@qa-sekcja
 ```
 
-Zawartość: `skills/` (`/qa-standards:pw-review`), `hooks/hooks.json` (zakaz sekretów), `.mcp.json` (Playwright MCP), `CHANGELOG.md`.
+Zawartość: `skills/` (`/qa-standards:pw-review`, `/qa-standards:analiza-buildu`), `hooks/hooks.json` (zakaz sekretów), `.mcp.json` (Playwright MCP), `CHANGELOG.md`.
