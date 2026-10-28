@@ -4,7 +4,7 @@ Projekt `demo-failures` (nie biegnie domyślnie) zawiera testy, które padają z
 
 | Plik | Kategoria | Mechanizm |
 |---|---|---|
-| `tests/cart.spec.ts` przy `--workers=4` | kolizja danych | wspólne konto i produkty o stałych nazwach (stan „przed” z 2A) |
+| `collision.spec.ts` (i `tests/cart.spec.ts` na `main`) przy `--workers=4` | kolizja danych | wspólne konto i produkty o stałych nazwach (stan „przed” z 2A) |
 | `flaky.spec.ts` | flaky | komunikat znika po losowym czasie 1–2 s, test czeka stałe 1,5 s |
 | `bug.spec.ts` | bug | aplikacja uruchomiona z `SHOP_BUG_TOTAL=1` liczy sumę koszyka bez ilości |
 | `permissions.spec.ts` | uprawnienia | test wchodzi do panelu admina na koncie bez roli admin |
