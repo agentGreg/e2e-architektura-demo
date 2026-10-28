@@ -1,4 +1,4 @@
-# Checklista testu E2E (wersja 0.2.0)
+# Checklista testu E2E (wersja 0.3.0)
 
 Obowiązkowe elementy każdego pliku `.spec.ts` w projektach sekcji.
 
@@ -9,3 +9,5 @@ Obowiązkowe elementy każdego pliku `.spec.ts` w projektach sekcji.
 5. **Lokatory.** `getByRole`, `getByLabel`, `getByText`, `getByTestId`. Bez CSS po klasach, bez XPath, bez `nth()` bez uzasadnienia w komentarzu.
 6. **Sprzątanie w fixture.** Żadnego `afterEach` z czyszczeniem danych w pliku testu; sprzątanie jest w teardown fixture.
 7. **Zasoby wyłączne.** Test zmieniający ustawienie globalne ma `lock` z nazwą zasobu albo tag `@exclusive` (projekt `serial-resources`).
+8. **Profil projektu.** Projekt e2e ma `.claude/test-profile.md` (szablon `docs/test-profile.template.md`); dane z pliku testu (role, prefiks, zasoby wyłączne) zgadzają się z profilem.
+9. **Bez stałego czekania.** Żadnego `waitForTimeout` w teście; czas obsługują asercje z auto-wait. Wyjątek wymaga komentarza z przyczyną.
