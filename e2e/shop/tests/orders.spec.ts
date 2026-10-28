@@ -13,6 +13,6 @@ test.describe('zamówienia klienta', { tag: '@shop' }, () => {
 
   test('pula zasobów: worker dostaje własny slot', async ({ poolSlot }, testInfo) => {
     // parallelIndex -> slot z puli; po restarcie workera ten sam slot wraca do użycia.
-    expect(poolSlot).toBe(testInfo.parallelIndex);
+    expect(poolSlot).toBe(`sklep-${String(testInfo.parallelIndex + 1).padStart(2, '0')}`);
   });
 });

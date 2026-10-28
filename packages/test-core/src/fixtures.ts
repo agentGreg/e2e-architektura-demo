@@ -19,8 +19,8 @@ export interface WorkerFixtures {
   workerUser: WorkerUser;
   /** Plik storageState zalogowanego workerUser; `page` dostaje go domyślnie. */
   workerStorageState: string;
-  /** Slot z puli zasobów (parallelIndex): dla zasobów przygotowanych z góry. */
-  poolSlot: number;
+  /** Zasób z puli przygotowanej z góry (np. sklep testowy), wybrany po parallelIndex. */
+  poolSlot: string;
 }
 
 export interface TestFixtures {
@@ -90,7 +90,9 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
 
   poolSlot: [
     async ({}, use, workerInfo) => {
-      await use(pickFromPool([0, 1, 2, 3], workerInfo.parallelIndex, workerInfo.config.workers));
+      // Pula demo: 16 "sklepów testowych". Przy --workers=20 fixture rzuca czytelny błąd zamiast kolizji.
+      const pool = Array.from({ length: 16 }, (_, i) => `sklep-${String(i + 1).padStart(2, '0')}`);
+      await use(pickFromPool(pool, workerInfo.parallelIndex, workerInfo.config.workers));
     },
     { scope: 'worker' },
   ],
