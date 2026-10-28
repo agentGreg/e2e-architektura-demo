@@ -1,0 +1,13 @@
+{
+  "name": "@demo/shop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sklep demo: logowanie, produkty, koszyk, zamówienia, panel admina. Port 4100.",
+  "scripts": {
+    "start": "node src/server.mjs"
+  },
+  "dependencies": {
+    "@demo/app-kit": "workspace:*"
+  }
+}

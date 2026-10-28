@@ -1,0 +1,13 @@
+{
+  "name": "@demo/backoffice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Backoffice demo: lista zamówień, anulowanie, globalny tryb konserwacji sklepu. Port 4200.",
+  "scripts": {
+    "start": "node src/server.mjs"
+  },
+  "dependencies": {
+    "@demo/app-kit": "workspace:*"
+  }
+}

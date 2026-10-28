@@ -1,0 +1,11 @@
+{
+  "name": "@demo/app-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Wspólny kod aplikacji demo: baza SQLite, mini-router HTTP, sesje. Aplikacje są systemem pod testem, nie częścią frameworka testowego.",
+  "exports": {
+    "./db": "./src/db.mjs",
+    "./http": "./src/http.mjs"
+  }
+}
