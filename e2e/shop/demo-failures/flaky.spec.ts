@@ -1,5 +1,5 @@
 // Kategoria: flaky. Komunikat znika po losowym czasie (1–2 s), test czeka stałe 1,2 s.
-// Przechodzi mniej więcej w połowie uruchomień; `--repeat-each=5` pokazuje to od razu.
+// Pada w ok. 80 % uruchomień (30.10: 25 z 30 przy `--repeat-each=30`); `--repeat-each=5` pokazuje to od razu.
 import { test, expect, FIXED_USER } from '@demo/test-core';
 
 test('komunikat o dodaniu do koszyka znika po 1,2 s', { tag: ['@demo', '@demo-red'] }, async ({ page, shopApi }) => {
