@@ -1,6 +1,6 @@
 # Ćwiczenie 3B. Skill w marketplace: lokalnie, z wersją i aktualizacją
 
-Blok 3.2, 15:10–16:00 (50 min): struktura pluginu i marketplace’u (6 min), ćwiczenie (15:16–15:41, 25 min), dystrybucja i karta dla IT (11 min), zasady marketplace’u (8 min). Praca indywidualna.
+Blok 3.2, 15:10–16:00 (50 min): domknięcie 3A (15:10–15:13), struktura pluginu i marketplace’u (15:13–15:19), ćwiczenie (15:19–15:44, 25 min), dystrybucja i karta dla IT (15:44–15:55, 11 min), zasady marketplace’u (15:55–16:00, 5 min). Praca indywidualna.
 
 ## Cel
 
@@ -108,4 +108,4 @@ Auto-update w tle wymaga poświadczeń git, które odpowiadają bez pytania (Git
 ## Artefakt do zabrania
 
 - Struktura pluginu z wersją i changelogiem, gotowa do przeniesienia do repo marketplace’u sekcji w Azure Repos.
-- Szablon zasad marketplace’u (`docs/szablony/zasady-marketplace.md`), wypełniany wspólnie w ostatnich 8 minutach bloku.
+- Szablon zasad marketplace’u (`docs/szablony/zasady-marketplace.md`): w ostatnich 5 minutach bloku na sali ustalamy pierwszy tydzień i właścicieli, resztę wypełnia przyszły admin marketplace’u.
