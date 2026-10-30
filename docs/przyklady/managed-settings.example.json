@@ -1,0 +1,15 @@
+{
+  "extraKnownMarketplaces": {
+    "qa-sekcja": {
+      "source": { "source": "github", "repo": "agentGreg/e2e-architektura-demo" },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "qa-standards@qa-sekcja": true
+  },
+  "strictKnownMarketplaces": [
+    { "source": "github", "repo": "anthropics/claude-plugins-official" },
+    { "source": "github", "repo": "agentGreg/e2e-architektura-demo" }
+  ]
+}
