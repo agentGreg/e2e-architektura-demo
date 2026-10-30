@@ -1,4 +1,4 @@
-// Seed z izolacją (rozwiązanie 2A). Dane per worker z prefiksem `e2e_<run>_w<workerIndex>_`,
+// Seed z izolacją (rozwiązanie 2A). Dane per worker z prefiksem `e2e_<run>_s<shard>_w<workerIndex>_`,
 // idempotentne (upsert po nazwie), sprzątane po prefiksie. Ten sam wzorzec działa na
 // dowolnym silniku: INSERT ... ON CONFLICT po stronie aplikacji, DELETE ... WHERE name LIKE 'e2e_<run>_%'.
 import crypto from 'node:crypto';
