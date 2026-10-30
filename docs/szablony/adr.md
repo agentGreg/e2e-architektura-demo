@@ -1,6 +1,6 @@
 # Szablon ADR (1 strona)
 
-Do ćwiczenia 1 (blok 1) i do Twojego repo. Ten sam szablon leży obok decyzji w `docs/adr/template.md`. Plik decyzji: `docs/adr/XXXX-<tytuł>.md`, gdzie `XXXX` to kolejny wolny numer. W repo demo 0001 jest zajęty (`docs/adr/0001-struktura-frameworka.md`, decyzja o monorepo), więc ADR z ćwiczenia zapisany tutaj dostaje 0002.
+Do ćwiczenia 1 (blok 1) i do Twojego repo. To jedyny szablon ADR w repo demo. Plik decyzji: `docs/adr/XXXX-<tytuł>.md`, gdzie `XXXX` to kolejny wolny numer. W repo demo 0001 jest zajęty (`docs/adr/0001-struktura-frameworka.md`, decyzja o monorepo), więc ADR z ćwiczenia zapisany tutaj dostaje 0002. Rozwiązanie wzorcowe do porównania po ćwiczeniu: gałąź `solution/1`, plik `docs/adr/0002-pierwszy-wspolny-pakiet-test-core.md`.
 
 Przed zapisem: rachunek kosztu kopiowania z karty ćwiczenia (`K_kopia` i `K_paczka`) wpisz do kontekstu, a zastrzeżenie dewelopera bez odpowiedzi do konsekwencji jako ryzyko.
 
