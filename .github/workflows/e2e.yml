@@ -19,7 +19,7 @@ jobs:
         shardTotal: [2]
     env:
       CI: 'true'
-      # runId do prefiksu danych testowych (e2e_<run>_w<worker>_...)
+      # runId do prefiksu danych testowych (e2e_<run>_s<shard>_w<worker>_...)
       E2E_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
       HOME: /root
     steps:
