@@ -14,17 +14,25 @@ docs/                ADR, ćwiczenia, szablony, karty wymagań (pipeline, IT), s
 scripts/             uruchamianie aplikacji, reset bazy, sharding, scalanie raportów, paczka offline
 ```
 
-Gałęzie: `main` (stan „przed”: kolizje przy 4 workerach), `solution/2a`, `solution/3a`, `solution/3b`.
+Gałęzie:
+
+| Gałąź | Zawartość |
+|---|---|
+| `main` | stan „przed”: kolizje przy 4 workerach, szkielety ćwiczeń 2A i 3A |
+| `solution/1` | `main` + wzorcowy ADR-0002 „pierwszy wspólny pakiet test-core” (ćwiczenie 1) |
+| `solution/2a` | fixtures z izolacją danych, storageState, `lock`, pula zasobów, sharding (ćwiczenie 2A) |
+| `solution/3a` | `solution/2a` + skill zespołowy `analiza-buildu` w pluginie i profile projektów (ćwiczenie 3A) |
+| `solution/3b` | `solution/3a` + plugin `qa-standards` 0.3.0 (ćwiczenie 3B) |
 
 ## Materiały szkolenia
 
-- Ćwiczenia: [`docs/cwiczenia/`](docs/cwiczenia/README.md): 2A fixtures i dane, policz shardy, przypadki z sali (zasób wyłączny), 3A skill `analiza-buildu`, 3B marketplace lokalnie.
+- Ćwiczenia: [`docs/cwiczenia/`](docs/cwiczenia/README.md): 1 podział i ADR (na kartkach, szablon niżej), 2A fixtures i dane, policz shardy, przypadki z sali (zasób wyłączny), 3A skill `analiza-buildu`, 3B marketplace lokalnie.
 - Szablony: [`docs/szablony/`](docs/szablony/): [ADR](docs/szablony/adr.md), [zasady marketplace’u](docs/szablony/zasady-marketplace.md), [plan wdrożenia](docs/szablony/plan-wdrozenia.md). Szablon profilu projektu dla skilli: [`docs/test-profile.template.md`](docs/test-profile.template.md).
 - Karta wymagań dla pipeline’u (dla DevOpsów): [`docs/pipeline-requirements.md`](docs/pipeline-requirements.md).
 - Karta dla IT (managed settings, marketplace, proxy): [`docs/karta-it.md`](docs/karta-it.md); przykład pliku managed settings: [`docs/przyklady/managed-settings.example.json`](docs/przyklady/managed-settings.example.json).
 - Szkielety do ćwiczeń: `packages/test-core/src/fixtures.skeleton.ts` (2A), `tooling/claude-plugins/qa-standards/skills/analiza-buildu/SKILL.skeleton.md` (3A).
-- Rozwiązania wzorcowe: gałęzie `solution/2a` (fixtures z izolacją, storageState, `lock`, pula zasobów, sharding), `solution/3a` (skill zespołowy w pluginie i profile projektów), `solution/3b` (plugin 0.3.0). Każda następna zawiera poprzednią. Porównanie: `git diff main origin/solution/2a -- packages/test-core e2e/shop`.
-- Po szkoleniu stan repo z dnia szkolenia zostanie oznaczony tagiem `szkolenie-2026-11-02`.
+- Rozwiązania wzorcowe: gałęzie `solution/*` z tabeli wyżej. `solution/3a` zawiera `solution/2a`, `solution/3b` zawiera `solution/3a`; `solution/1` różni się od `main` tylko plikiem ADR. Porównanie: `git diff main origin/solution/2a -- packages/test-core e2e/shop`.
+- Po szkoleniu: [`docs/po-szkoleniu.md`](docs/po-szkoleniu.md) (punkt startu w repo dla każdego działania z planu wdrożenia), wyniki z sali w [`docs/wyniki/2026-11-02/`](docs/wyniki/2026-11-02/README.md). Stan repo z dnia szkolenia zostanie oznaczony tagiem `szkolenie-2026-11-02`.
 
 ## Wymagania
 
