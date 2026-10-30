@@ -23,8 +23,8 @@ Repo demo, gałąź `main`:
 
   | Gałąź | Sklep: testy / nieudane / flaky | Backoffice: testy / nieudane / flaky | Czas generatora |
   |---|---|---|---|
-  | `main` | 48 / 12–13 / 4–5 | 33 / 8 / 3–4 | ok. 1,5 min |
-  | `solution/3a` | 55 / 12 / 3–5 | 37 / 6 / 4–5 | ok. 2,5 min |
+  | `main` | 48 / 12–14 / 4–5 | 33 / 8 / 3–4 | ok. 1,5 min |
+  | `solution/3a` | 55 / 11–12 / 3–5 | 37 / 6 / 4–5 | ok. 2,5 min |
 
   Porażki pięciu kategorii opisuje `e2e/shop/demo-failures/README.md` (np. flaky: komunikat znika po losowych 1–2 s, a test czeka stałe 1,2 s).
 - `.claude/agents/flaky-triage.md`: subagent z podobnymi kategoriami (możesz skopiować opisy).
