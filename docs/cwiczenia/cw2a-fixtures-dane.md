@@ -1,6 +1,6 @@
 # Ćwiczenie 2A. Fixture, który przygotowuje i sprząta dane
 
-Blok 2.2, 11:05–11:35 (30 min). Praca indywidualna, trener chodzi po sali.
+Blok 2.2. Start przed przerwą 10:25–10:30 (omówienie, skopiowanie szkieletu, `pnpm typecheck`), praca 10:45–11:25 (40 min): do 11:10 kryteria „gotowe” dla koszyka, 11:10–11:25 zadanie dodatkowe. Rozwiązanie wzorcowe 11:25–11:30. Praca indywidualna albo w parze, trener chodzi po sali.
 
 ## Cel
 
@@ -95,7 +95,7 @@ Przed `TODO 1`: prefiks opiera się na `workerIndex`. Worker restartuje po każd
 
 Kryteria dotyczą tylko `cart.spec.ts`. `orders.spec.ts` i `admin.spec.ts` zostają w stanie „przed”, więc przy 4 workerach nadal mogą padać.
 
-## Zadanie dodatkowe dla szybkich
+## Zadanie dodatkowe (11:10–11:25)
 
 1. Przepisz `e2e/shop/tests/orders.spec.ts` i `e2e/shop/tests/admin.spec.ts` na fixtures z prefiksem: produkt z `product`, nowy produkt admina z nazwą z `prefix`, logowanie admina przez `storageState` zamiast formularza. Potem cały projekt:
    ```powershell
@@ -109,7 +109,7 @@ Wzorzec fixture’a z prefiksem i sprzątaniem (`fixtures.ts` po ćwiczeniu) ora
 
 ## Rozwiązanie wzorcowe
 
-Gałąź `solution/2a`. Pokazujemy je po ćwiczeniu (5 min).
+Gałąź `solution/2a`. Pokazujemy je po ćwiczeniu, 11:25–11:30.
 
 ```powershell
 git fetch origin
