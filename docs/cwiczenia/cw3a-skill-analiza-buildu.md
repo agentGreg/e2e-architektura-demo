@@ -1,6 +1,6 @@
 # Ćwiczenie 3A. Skill zespołowy „analiza nieudanego buildu E2E”
 
-Blok 3.1, 14:17–14:55 (38 min). Wcześniej w bloku: „gdzie co umieścić” (11 min) i demo Playwright MCP (11 min). Praca indywidualna albo w parach.
+Blok 3.1, 14:17–14:55 (38 min), po przerwie domknięcie 15:10–15:13 (3 min: kto nie skończył, `git stash` i `git switch solution/3a`, bo 3B potrzebuje działającego skilla; kto skończył, sprawdza kryterium 4). Wcześniej w bloku: „gdzie co umieścić” (11 min) i demo Playwright MCP (11 min). Praca indywidualna albo w parach.
 
 ## Cel
 

@@ -1,6 +1,6 @@
 # Zasady marketplace’u sekcji testów
 
-Szablon do wypełnienia na sali (blok 3.2, 15:52–16:00). Jedna strona. Po szkoleniu trafia do repo marketplace’u jako `ZASADY.md`.
+Blok 3.2, 15:55–16:00 (5 min). Na sali wypełniamy tylko sekcję 7 (pierwszy tydzień: kto zakłada repo, kto jest adminem) i właściciela marketplace’u i pierwszego pluginu w sekcji 1. Resztę wypełnia przyszły admin marketplace’u. Jedna strona. Po szkoleniu trafia do repo marketplace’u jako `ZASADY.md`.
 
 Marketplace: `…………………` (pole `name` w `marketplace.json`)  Repo: `https://dev.azure.com/…/_git/…………`  Wersja zasad: …… z dnia ……
 
