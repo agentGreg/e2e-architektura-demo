@@ -1,20 +1,22 @@
-# ADR-NNNN: <tytuł decyzji>
+# ADR-XXXX: <tytuł decyzji>
 
-Data: YYYY-MM-DD. Status: proponowany | przyjęty | zastąpiony przez ADR-NNNN.
+Data: RRRR-MM-DD. Status: proponowany | przyjęty | zastąpiony przez ADR-XXXX.
+
+<!-- Plik: docs/adr/XXXX-<tytuł>.md, XXXX = kolejny wolny numer. W tym repo 0001 jest zajęty (struktura frameworka). -->
 
 ## Kontekst
 
-Co wymusza decyzję: stan obecny, koszt, który boli, ograniczenia (zespół, CI, deweloperzy).
+Co wymusza decyzję: stan obecny, koszt, który boli (z liczbą, np. rachunek kosztu kopiowania z ćwiczenia 1), ograniczenia (zespół, CI, deweloperzy).
 
 ## Decyzja
 
-Jedno zdanie z „postanawiamy”. Potem 3–5 punktów, co to oznacza w repo.
+Jedno zdanie z „postanawiamy”. Potem 3–5 punktów: co to oznacza w repo.
 
 ## Konsekwencje
 
 - Co staje się tańsze (koszt zmiany, koszt utrzymania; przykład liczbowy, jeśli jest).
 - Co staje się droższe albo trudniejsze.
-- Ryzyko, na które nie mamy odpowiedzi (z ćwiczenia: zastrzeżenie dewelopera bez kontrargumentu).
+- Ryzyko bez odpowiedzi (zastrzeżenie dewelopera z ćwiczenia).
 
 ## Alternatywy odrzucone
 

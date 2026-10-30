@@ -1,5 +1,5 @@
 // Fixtures z izolacją danych (rozwiązanie 2A).
-// Zasięg worker: adminApi, workerUser (użytkownik e2e_<run>_w<n>_user), workerStorageState.
+// Zasięg worker: adminApi, workerUser (użytkownik e2e_<run>_s<shard>_w<n>_user), workerStorageState.
 // Zasięg test: shopApi (jako workerUser), product/products/order (własne dane per test), db.
 import { test as base } from '@playwright/test';
 import fs from 'node:fs';
@@ -11,7 +11,7 @@ import { workerPrefix } from './run-id';
 import { pickFromPool } from './pool';
 
 export interface WorkerFixtures {
-  /** Prefiks danych tego workera: e2e_<run>_w<workerIndex>_ */
+  /** Prefiks danych tego workera: e2e_<run>_s<shard>_w<workerIndex>_ */
   prefix: string;
   /** Klient API zalogowany jako admin (konto bazowe), do tworzenia i sprzątania danych. */
   adminApi: ShopApi;
