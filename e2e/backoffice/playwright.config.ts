@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 import path from 'node:path';
 
 process.env.NODE_OPTIONS = [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' ');
+// runId raz, w procesie głównym; workery i shardy dziedziczą go przez process.env (prefiks danych
+// e2e_<run>_s<shard>_w<worker>_ od ćwiczenia 2A). Na CI numer buildu, lokalnie znacznik czasu.
+process.env.E2E_RUN_ID ??= process.env.BUILD_BUILDID ?? process.env.GITHUB_RUN_ID ?? String(Date.now());
 
 const SHOP_URL = process.env.SHOP_URL ?? 'http://localhost:4100';
 const BACKOFFICE_URL = process.env.BACKOFFICE_URL ?? 'http://localhost:4200';
