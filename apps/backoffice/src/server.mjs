@@ -1,7 +1,9 @@
 // Backoffice demo (system pod testem): zamówienia, anulowanie, tryb konserwacji sklepu.
 // Operatorem jest użytkownik z rolą admin (ta sama baza co sklep).
 import { openDb, ensureSchema } from '@demo/app-kit/db';
-import { createApp, layout, escapeHtml } from '@demo/app-kit/http';
+import { createApp, layout as baseLayout, escapeHtml } from '@demo/app-kit/http';
+
+const layout = (opts) => baseLayout({ ...opts, variant: 'backoffice' });
 
 const PORT = Number(process.env.BACKOFFICE_PORT ?? 4200);
 const db = openDb();
