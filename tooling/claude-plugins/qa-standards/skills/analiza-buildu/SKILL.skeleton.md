@@ -18,7 +18,7 @@ TODO: wypisz, które pola profilu są potrzebne w dalszych krokach.
 ## 2. Zbierz porażki
 TODO: jak dostać listę porażek z results.json / junit.xml i wynik tego samego testu
 w próbie udanej (skrypt w scripts/ albo instrukcja dla modelu). Nie czytaj results.json
-w całości: to dziesiątki tysięcy linii.
+w całości: to kilka tysięcy linii (w demo 2500–3900, 120–230 KB).
 
 ## 3. Dowody per porażka
 Dla każdej porażki przeczytaj error-context.md. Porównanie prób z trace:

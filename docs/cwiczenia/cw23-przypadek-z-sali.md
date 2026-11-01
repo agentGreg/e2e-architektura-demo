@@ -82,7 +82,7 @@ Opis z ankiety, bez nazwy aplikacji i projektu:
 
 ## Kryterium „gotowe”
 
-Para ma szczebel i uzasadnienie dla czterech elementów przypadku 1, wypełnioną kolumnę „Działa między shardami” w zadaniu B i obie tabele zadania D.
+Para ma szczebel i uzasadnienie dla czterech elementów przypadku 1, wypełniony wiersz „Działa między shardami na różnych agentach?” w zadaniu B i obie tabele zadania D.
 
 ## Artefakt do zabrania
 
