@@ -19,12 +19,14 @@ Repo demo, gałąź `main`:
 - Plugin `tooling/claude-plugins/qa-standards/` (ma skill `pw-review` jako wzór formatu).
 - Szkielet skilla: `tooling/claude-plugins/qa-standards/skills/analiza-buildu/SKILL.skeleton.md`. Claude Code go nie ładuje, dopóki nie zmienisz nazwy na `SKILL.md` (krok 3).
 - Szablon profilu projektu: `docs/test-profile.template.md`.
-- Generator nieudanego buildu: `pnpm demo:failures` (działa na każdej gałęzi). Dla sklepu i backoffice daje `e2e/<app>/demo-runs/ok/` (próba udana, 1 worker) i `e2e/<app>/demo-runs/failed/` (próba nieudana: `--workers=4 --repeat-each=3 --retries=1`), w każdym `results.json`, `junit.xml`, `playwright-report/`, `test-results/` z trace. Kolizje i flaky są losowe, więc liczby różnią się między uruchomieniami (pomiar z 30.10):
+- Generator nieudanego buildu: `pnpm demo:failures` (działa na każdej gałęzi). Dla sklepu i backoffice daje `e2e/<app>/demo-runs/ok/` (próba udana, 1 worker) i `e2e/<app>/demo-runs/failed/` (próba nieudana: `--workers=4 --repeat-each=3 --retries=1`), w każdym `results.json`, `junit.xml`, `playwright-report/`, `test-results/` z trace. Kolizje i flaky są losowe, więc liczby różnią się między uruchomieniami (rozrzut z pomiarów 30.10–1.11, po kilka uruchomień na gałąź):
 
   | Gałąź | Sklep: testy / nieudane / flaky | Backoffice: testy / nieudane / flaky | Czas generatora |
   |---|---|---|---|
-  | `main` | 48 / 12–14 / 4–5 | 33 / 8 / 3–4 | ok. 1,5 min |
-  | `solution/3a` | 55 / 11–12 / 3–5 | 37 / 6 / 4–5 | ok. 2,5 min |
+  | `main` | 48 / 9–16 / 2–8 | 33 / 6–10 / 1–5 | ok. 1,5 min |
+  | `solution/3a` | 55 / 10–14 / 3–5 | 37 / 6 / 4–6 | ok. 2,5 min |
+
+  Wynik spoza tych zakresów nie oznacza awarii. Generator jest w porządku, gdy na końcu wypisuje dla obu aplikacji `ok kod 0 (oczekiwane 0), failed kod 1 (oczekiwane 1)`.
 
   Porażki pięciu kategorii opisuje `e2e/shop/demo-failures/README.md` (np. flaky: komunikat znika po losowych 1–2 s, a test czeka stałe 1,2 s).
 - `.claude/agents/flaky-triage.md`: subagent z podobnymi kategoriami (możesz skopiować opisy).
