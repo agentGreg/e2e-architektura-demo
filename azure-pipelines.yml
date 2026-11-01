@@ -42,6 +42,9 @@ stages:
             env:
               CI: 'true'
               E2E_RUN_ID: $(Build.BuildId)
+              # Domyślnie blob to report-<nr sharda>.zip, ten sam w shop i backoffice;
+              # w zadaniu scalającym pliki trafiają do jednego katalogu, więc nazwa musi być unikalna.
+              PLAYWRIGHT_BLOB_OUTPUT_NAME: report-$(app)-$(System.JobPositionInPhase).zip
           - task: PublishPipelineArtifact@1
             displayName: 'Publish blob report'
             inputs:
@@ -50,6 +53,9 @@ stages:
               publishLocation: 'pipeline'
             condition: succeededOrFailed()
 
+      # Testy na zasobach wyłącznych (lock, projekt workers: 1) biegną w osobnym zadaniu poza macierzą
+      # (wymaganie 14 w docs/pipeline-requirements.md). Na main takich testów nie ma; zadanie
+      # `serial-resources` z projektem o tej nazwie jest w azure-pipelines.yml na gałęzi solution/2a.
       - job: quarantine
         displayName: 'Kwarantanna (nie wpływa na status)'
         container: mcr.microsoft.com/playwright:v1.64.1-noble
@@ -59,7 +65,7 @@ stages:
             inputs:
               version: '24'
           - script: corepack enable && pnpm install --frozen-lockfile
-          - script: pnpm --filter e2e-shop exec playwright test --grep @quarantine --repeat-each=3
+          - script: pnpm --filter e2e-shop exec playwright test --grep @quarantine --repeat-each=3 --pass-with-no-tests
             env:
               CI: 'true'
 
