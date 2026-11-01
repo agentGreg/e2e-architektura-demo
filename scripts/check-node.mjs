@@ -13,4 +13,4 @@ if (!ok) {
   );
   process.exit(1);
 }
-if (major === 20) process.exit(1);
+console.log(`Node ${process.versions.node}: OK (wymagane >= ${REQUIRED.join('.')}).`);
