@@ -1,7 +1,7 @@
 // Drabina decyzyjna, szczebel (3): zasób jest jeden, a test długi i ryzykowny -> tag @exclusive,
 // osobny projekt `serial-resources` z `workers: 1`, poza główną macierzą (główny projekt ma grepInvert).
-// Ten sam zasób co w maintenance.spec.ts; `lock` też by zadziałał, ale długi test trzymałby lock
-// i blokował krótkie testy z głównego projektu.
+// Osobny projekt nie wystarcza: serial-resources biegnie równolegle z chromium, a maintenance.spec.ts
+// w chromium przełącza ten sam tryb konserwacji. Dlatego test deklaruje też `lock: 'maintenance'`.
 import { test, expect, SHOP_URL } from '../fixtures';
 
 test(
