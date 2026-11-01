@@ -7,7 +7,6 @@ playwright-report/
 blob-report/
 all-blob-reports/
 .auth/
-offline/
 *.zip
 .claude/settings.local.json
 .DS_Store
