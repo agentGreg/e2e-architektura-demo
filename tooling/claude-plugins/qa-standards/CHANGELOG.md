@@ -4,6 +4,8 @@ Semver: patch = treść referencji (checklista, przykłady); minor = nowy krok w
 
 ## 0.3.0
 
+Minor, bo dochodzi nowy skill (`analiza-buildu`). Punkty 8 i 9 checklisty same byłyby patchem (treść referencji); wchodzą razem z tym wydaniem.
+
 - Checklista: punkt 8 (profil projektu) i 9 (bez `waitForTimeout`).
 - Skill `analiza-buildu`: analiza nieudanego buildu E2E; proces i kategorie w pluginie, dane projektu w `.claude/test-profile.md` projektu e2e; skrypt `scripts/parse-report.mjs` (json/junit, porównanie z próbą udaną).
 
