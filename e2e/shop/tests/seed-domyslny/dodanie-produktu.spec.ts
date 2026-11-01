@@ -2,6 +2,7 @@
 // seed: tests/seed.spec.ts
 
 import { test, expect } from '@playwright/test';
+import { clearCart } from './helpers';
 
 test.describe('Koszyk (seed domyślny)', () => {
   test('Dodanie produktu do koszyka', { tag: ['@smoke', '@shop'] }, async ({ page }) => {
@@ -10,11 +11,14 @@ test.describe('Koszyk (seed domyślny)', () => {
     await page.getByRole('textbox', { name: 'Login' }).fill('user');
     await page.getByRole('textbox', { name: 'Hasło' }).fill('user123');
     await page.getByRole('button', { name: 'Zaloguj' }).click();
+    await clearCart(page);
     await page.goto('/');
 
-    await expect(page.getByRole('cell', { name: 'Mydło', exact: true })).toBeVisible();
-    await expect(page.getByRole('cell', { name: 'Pasta do zębów' })).toBeVisible();
-    await expect(page.getByRole('cell', { name: 'Szampon' })).toBeVisible();
+    // Nazwy produktów: komórka z data-testid, bo komórka z przyciskiem też ma w nazwie dostępnej nazwę produktu.
+    const productNames = page.getByTestId('product-name');
+    await expect(productNames.filter({ hasText: /^Mydło$/ })).toBeVisible();
+    await expect(productNames.filter({ hasText: /^Pasta do zębów$/ })).toBeVisible();
+    await expect(productNames.filter({ hasText: /^Szampon$/ })).toBeVisible();
     await expect(page.getByText('Zalogowano jako user (user)')).toBeVisible();
 
     // 2. Kliknij przycisk „Dodaj do koszyka: Mydło”.

@@ -2,6 +2,7 @@
 // seed: tests/seed.spec.ts
 
 import { test, expect } from '@playwright/test';
+import { clearCart } from './helpers';
 
 test.describe('Koszyk (seed domyślny)', () => {
   test('Negatywny: pusty koszyk i koszyk bez logowania', { tag: ['@shop'] }, async ({ page }) => {
@@ -11,6 +12,8 @@ test.describe('Koszyk (seed domyślny)', () => {
     await page.getByRole('textbox', { name: 'Hasło' }).fill('user123');
     await page.getByRole('button', { name: 'Zaloguj' }).click();
     await expect(page.getByText('Zalogowano jako user (user)')).toBeVisible();
+
+    await clearCart(page);
 
     await page.goto('http://localhost:4100/orders');
     const ordersBefore = await page.getByRole('row').count();

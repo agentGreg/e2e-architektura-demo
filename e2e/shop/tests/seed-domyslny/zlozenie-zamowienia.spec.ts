@@ -2,6 +2,7 @@
 // seed: tests/seed.spec.ts
 
 import { test, expect } from '@playwright/test';
+import { clearCart } from './helpers';
 
 test.describe('Koszyk (seed domyślny)', () => {
   test('Złożenie zamówienia z koszyka', { tag: ['@shop'] }, async ({ page }) => {
@@ -12,8 +13,11 @@ test.describe('Koszyk (seed domyślny)', () => {
     await page.getByRole('button', { name: 'Zaloguj' }).click();
     await expect(page.getByText('Zalogowano jako user (user)')).toBeVisible();
 
+    await clearCart(page);
+    await page.goto('/');
     await page.getByRole('button', { name: 'Dodaj do koszyka: Szampon' }).click();
-    await page.goto('http://localhost:4100/cart');
+    await expect(page).toHaveURL(/\/\?added=Szampon$/);
+    await page.goto('/cart');
     await expect(page.getByText('Pozycji: 1, razem: 12,99 zł')).toBeVisible();
 
     // 2. Kliknij „Złóż zamówienie”.

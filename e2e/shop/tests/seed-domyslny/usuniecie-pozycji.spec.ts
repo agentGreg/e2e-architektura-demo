@@ -2,6 +2,7 @@
 // seed: tests/seed.spec.ts
 
 import { test, expect } from '@playwright/test';
+import { clearCart } from './helpers';
 
 test.describe('Koszyk (seed domyślny)', () => {
   test(
@@ -14,6 +15,8 @@ test.describe('Koszyk (seed domyślny)', () => {
       await page.getByRole('textbox', { name: 'Hasło' }).fill('user123');
       await page.getByRole('button', { name: 'Zaloguj' }).click();
       await expect(page.getByRole('heading', { name: 'Produkty' })).toBeVisible();
+      await clearCart(page);
+      await page.goto('/');
 
       const addSoap = page.getByRole('button', { name: 'Dodaj do koszyka: Mydło' });
       await addSoap.click();
