@@ -7,11 +7,11 @@ claude plugin marketplace add agentGreg/e2e-architektura-demo
 claude plugin install qa-standards@qa-sekcja --scope project
 ```
 
-Lokalnie (własny klon jako marketplace, ćwiczenie 3B część 1):
+Lokalnie (własny klon jako marketplace; kroki i oczekiwane wyniki: `docs/cwiczenia/cw3b-marketplace-lokalny.md`). Polecenia z katalogu głównego klonu, nie z katalogu pluginu:
 
 ```powershell
 claude plugin validate .
-claude plugin marketplace add C:\e2e\e2e-architektura-demo
+claude plugin marketplace add ./
 claude plugin install qa-standards@qa-sekcja
 ```
 
