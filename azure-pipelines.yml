@@ -37,16 +37,51 @@ stages:
             displayName: 'Node 24'
           - script: corepack enable && pnpm install --frozen-lockfile
             displayName: 'pnpm install'
-          - script: pnpm --filter e2e-$(app) exec playwright test --shard=$(shard)
+          # Tylko projekt chromium (z zależnością setup); serial-resources ma własne zadanie niżej.
+          - script: pnpm --filter e2e-$(app) exec playwright test --project=chromium --shard=$(shard)
             displayName: 'Playwright: $(app) shard $(shard)'
             env:
               CI: 'true'
               E2E_RUN_ID: $(Build.BuildId)
+              # Domyślnie blob to report-<nr sharda>.zip, ten sam w shop i backoffice;
+              # w zadaniu scalającym pliki trafiają do jednego katalogu, więc nazwa musi być unikalna.
+              PLAYWRIGHT_BLOB_OUTPUT_NAME: report-$(app)-$(System.JobPositionInPhase).zip
           - task: PublishPipelineArtifact@1
             displayName: 'Publish blob report'
             inputs:
               targetPath: e2e/$(app)/blob-report
               artifact: blob-report-$(app)-$(System.JobPositionInPhase)
+              publishLocation: 'pipeline'
+            condition: succeededOrFailed()
+
+      # Testy na zasobach wyłącznych (@exclusive, projekt serial-resources z workers: 1) poza macierzą
+      # shardów (wymaganie 14 w docs/pipeline-requirements.md): `lock` działa tylko w jednym procesie
+      # Playwrighta, więc dwa shardy na różnych agentach nie widzą nawzajem swoich blokad.
+      - job: serial_resources
+        displayName: 'Zasoby wyłączne (bez shardów)'
+        container: mcr.microsoft.com/playwright:v1.64.1-noble
+        strategy:
+          matrix:
+            shop:
+              app: shop
+            backoffice:
+              app: backoffice
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: '24'
+          - script: corepack enable && pnpm install --frozen-lockfile
+          - script: pnpm --filter e2e-$(app) exec playwright test --project=serial-resources --pass-with-no-tests
+            displayName: 'Playwright: $(app) serial-resources'
+            env:
+              CI: 'true'
+              E2E_RUN_ID: $(Build.BuildId)
+              PLAYWRIGHT_BLOB_OUTPUT_NAME: report-$(app)-serial.zip
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish blob report'
+            inputs:
+              targetPath: e2e/$(app)/blob-report
+              artifact: blob-report-$(app)-serial
               publishLocation: 'pipeline'
             condition: succeededOrFailed()
 
@@ -59,7 +94,9 @@ stages:
             inputs:
               version: '24'
           - script: corepack enable && pnpm install --frozen-lockfile
-          - script: pnpm --filter e2e-shop exec playwright test --grep @quarantine --repeat-each=3
+          # Projekt quarantine ma default: false, a chromium wyklucza @quarantine (grepInvert),
+          # więc samo --grep @quarantine nie wybrałoby żadnego testu.
+          - script: pnpm --filter e2e-shop exec playwright test --project=quarantine --repeat-each=3 --pass-with-no-tests
             env:
               CI: 'true'
 
