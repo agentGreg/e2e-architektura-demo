@@ -1,6 +1,7 @@
 // Czyta raport Playwright (results.json z reportera `json`, albo junit.xml) i wypisuje
 // porażki w jednym zwięzłym Markdownie: test, projekt, status, pierwsza linia błędu, trace,
-// error-context, plus porównanie z próbą udaną, jeśli obok leży katalog `ok/`.
+// error-context (z pierwszej nieudanej próby, także dla `flaky`), plus porównanie z próbą udaną,
+// jeśli obok leży katalog `ok/`.
 // Skill wykonuje ten skrypt zamiast czytać surowy JSON (oszczędza kontekst). Działa też bez Claude.
 //
 // Użycie: node parse-report.mjs <katalog z results.json lub junit.xml> [--ok <katalog próby udanej>]
@@ -25,6 +26,10 @@ function loadJson(file) {
     for (const spec of suite.specs ?? []) {
       for (const t of spec.tests) {
         const last = t.results[t.results.length - 1] ?? {};
+        // Błąd i załączniki z pierwszej nieudanej próby: przy statusie `flaky` ostatnia próba
+        // przeszła i nie ma ani błędu, ani error-context.md.
+        const failed = t.results.find((r) => r.status !== 'passed' && r.status !== 'skipped') ?? last;
+        const passedRetry = t.status === 'flaky' ? t.results.find((r) => r.status === 'passed') : undefined;
         tests.push({
           id: `${t.projectName} › ${[...here.slice(1), spec.title].join(' › ')}`,
           file: spec.file,
@@ -32,10 +37,13 @@ function loadJson(file) {
           project: t.projectName,
           outcome: t.status, // expected | unexpected | flaky | skipped
           attempts: t.results.map((r) => r.status),
-          error: firstLine(last.error?.message ?? last.errors?.[0]?.message),
-          errorDetail: stripAnsi(last.error?.message ?? '').split('\n').slice(0, 12).join('\n'),
-          duration: last.duration,
-          attachments: (last.attachments ?? []).filter((a) => a.path).map((a) => `${a.name}: ${a.path}`),
+          error: firstLine(failed.error?.message ?? failed.errors?.[0]?.message),
+          errorDetail: stripAnsi(failed.error?.message ?? '').split('\n').slice(0, 12).join('\n'),
+          duration: failed.duration,
+          attachments: [
+            ...(failed.attachments ?? []).filter((a) => a.path).map((a) => `${a.name} (próba ${failed.retry ?? 0}, ${failed.status}): ${a.path}`),
+            ...(passedRetry?.attachments ?? []).filter((a) => a.path && a.name === 'trace').map((a) => `trace (próba ${passedRetry.retry}, passed po retry): ${a.path}`),
+          ],
         });
       }
     }
@@ -96,8 +104,10 @@ if (bad.length === 0) console.log('Brak porażek.');
 // Grupujemy powtórzenia tego samego testu (repeat-each), żeby skill widział "ile razy padł".
 const groups = new Map();
 for (const t of bad) {
-  const g = groups.get(t.id) ?? { ...t, runs: 0, errors: new Set(), attachments: new Set() };
+  const g = groups.get(t.id) ?? { ...t, runs: 0, outcomes: {}, attemptsAll: [], errors: new Set(), attachments: new Set() };
   g.runs += 1;
+  g.outcomes[t.outcome] = (g.outcomes[t.outcome] ?? 0) + 1;
+  g.attemptsAll.push(t.attempts.join('→'));
   if (t.error) g.errors.add(t.error);
   for (const a of t.attachments) g.attachments.add(a);
   groups.set(t.id, g);
@@ -108,7 +118,8 @@ for (const g of groups.values()) {
   const inOk = okById.get(g.id);
   console.log(`### ${g.id}`);
   console.log(`- plik: ${g.file ?? '?'}:${g.line ?? '?'}`);
-  console.log(`- wynik: ${g.outcome}, padł ${g.runs} z ${totalById[g.id]} uruchomień; próby: ${g.attempts.join(', ')}`);
+  const outcomes = Object.entries(g.outcomes).map(([k, v]) => `${k} ${v}`).join(', ');
+  console.log(`- wynik: padł w ${g.runs} z ${totalById[g.id]} uruchomień (${outcomes}); próby: ${g.attemptsAll.join('; ')}`);
   if (inOk) console.log(`- w próbie udanej: ${inOk.outcome} (${inOk.attempts.join(', ')})`);
   else if (ok) console.log('- w próbie udanej: brak tego testu');
   for (const e of g.errors) console.log(`- błąd: ${e}`);

@@ -17,7 +17,7 @@ Znajdź profil `.claude/test-profile.md`, idąc od katalogu raportu w górę do 
 (`${CLAUDE_PROJECT_DIR}`). Przeczytaj go w całości.
 
 Jeśli profilu nie ma: **zatrzymaj się** i poproś o utworzenie z szablonu
-`${CLAUDE_PROJECT_DIR}/docs/test-profile.template.md` (albo `${CLAUDE_PLUGIN_ROOT}/skills/analiza-buildu/references/test-profile.template.md`).
+`${CLAUDE_SKILL_DIR}/references/test-profile.template.md`.
 Nie zgaduj adresów, kont, ścieżek ani konwencji.
 
 Z profilu bierzesz: skąd raporty i trace, adres środowiska, konta i role, konwencję nazw danych
@@ -30,10 +30,11 @@ node "${CLAUDE_SKILL_DIR}/scripts/parse-report.mjs" <katalog raportu> [--ok <kat
 ```
 
 Skrypt czyta `results.json` (reporter `json`) albo `junit.xml`, grupuje powtórzenia testu
-i dla każdej porażki podaje pierwszą linię błędu, ścieżki `trace.zip` i `error-context.md`,
-a gdy obok jest próba udana, jej wynik dla tego samego testu. Dla blobów najpierw
+i dla każdej porażki podaje wyniki powtórzeń, pierwszą linię błędu, ścieżki `trace.zip`
+i `error-context.md` z pierwszej nieudanej próby (także dla `flaky`), a gdy obok jest próba
+udana, jej wynik dla tego samego testu. Dla blobów najpierw
 `npx playwright merge-reports --reporter json <blob-report> > results.json`.
-Nie czytaj `results.json` ręcznie; to kilkadziesiąt tysięcy linii.
+Nie czytaj `results.json` ręcznie; to kilka tysięcy linii (w demo 2500–3900, 120–230 KB).
 
 ## 3. Dowody per porażka
 
@@ -47,8 +48,14 @@ prefiksu projektu, kodów 401/403/503, `ECONNREFUSED`, `waitForTimeout` w teści
 Kategorie, sygnały i działania: `${CLAUDE_SKILL_DIR}/references/kategorie.md`.
 Jedna kategoria na porażkę; jeśli dwie pasują, wybierz tę wyżej na liście
 (środowisko > uprawnienia > uszkodzone dane > kolizja danych > flaky > bug) i napisz dlaczego.
-Reguła: ten sam test zielony w próbie udanej (1 worker) i czerwony w nieudanej (N workerów)
-to kolizja danych albo flaky; czerwony w obu to bug, uprawnienia, dane albo środowisko.
+Reguła porównania z próbą udaną (1 worker):
+- zielony w udanej, w nieudanej wyniki mieszane (część powtórzeń albo retry przechodzi):
+  kolizja danych albo flaky;
+- padł we wszystkich powtórzeniach, także po retry: bug, uprawnienia, dane albo środowisko,
+  nawet gdy w udanej był zielony (między próbami zmieniła się aplikacja albo środowisko);
+- brak testu w próbie udanej: porównanie nic nie mówi, rozstrzygają sygnały z kroku 3.
+Status `flaky` sam niczego nie rozstrzyga: kolizja po retry też go dostaje, a test flaky
+padający w większości prób zwykle kończy jako `unexpected`.
 
 ## 5. Wynik
 

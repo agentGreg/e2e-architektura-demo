@@ -9,6 +9,7 @@ srodowisko:
   uruchomienie: pnpm --filter e2e-backoffice exec playwright test
 raporty:
   lokalnie: e2e/backoffice/playwright-report, e2e/backoffice/test-results/<test>/{error-context.md,trace.zip}
+  z_generatora: e2e/backoffice/demo-runs/{ok,failed}/ (results.json, junit.xml, playwright-report, test-results z trace)
   z_pipelinu: artefakt playwright-report po merge-reports (html + junit.xml)
   format: list + html lokalnie; na CI blob -> merge-reports
 konta_i_role:
@@ -20,6 +21,7 @@ dane_testowe:
   prefiks: e2e_<runId>_s<shard>_w<workerIndex>_ (zamówienia: <prefiks>ORD-<id produktu>)
   bazowe: konta user/admin, produkty bazowe; nie modyfikować
   sprzatanie: zamówienia znikają kaskadowo z produktem i użytkownikiem workera; kontrola `pnpm seed:check`
+  uwaga: projekt `demo-failures` celowo loguje się przez UI wspólnymi kontami admin i user, używa zamówienia o stałym numerze ORD-DEMO-1, przełącza tryb konserwacji bez `lock` i woła usługę raportów na porcie 4300, której nikt nie uruchamia (materiał szkoleniowy)
 zasoby_wylaczne:
   - tryb konserwacji sklepu: `lock: 'maintenance'` (tests/maintenance.spec.ts) oraz @exclusive w projekcie serial-resources (maintenance-flow.spec.ts); fixture `maintenance` przywraca stan wyłączony
 konwencje:
