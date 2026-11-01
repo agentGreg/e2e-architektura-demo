@@ -14,7 +14,7 @@ Repo demo, gałąź `main`:
 
 - `e2e/shop/tests/cart.spec.ts`: stan „przed”. Wszystkie testy na jednym koncie `user`, produkty o stałych nazwach, seed w `beforeAll`, logowanie przez formularz w `beforeEach`, sprzątanie w `afterEach`.
 - `packages/test-core/src/fixtures.ts`: fixtures „przed” (`db`, `shopApi`, `backofficeApi`).
-- `packages/test-core/src/fixtures.skeleton.ts`: szkielet do ćwiczenia. Ma te same `db`, `shopApi`, `backofficeApi` i nowe fixtures z miejscami `TODO 1`–`TODO 5`. Nazwy fixtures są takie same jak w rozwiązaniu wzorcowym (`solution/2a`).
+- `packages/test-core/src/fixtures.skeleton.ts`: szkielet do ćwiczenia. Ma te same `db`, `shopApi`, `backofficeApi` i nowe fixtures z miejscami `TODO 1`–`TODO 6`. Nazwy fixtures są takie same jak w rozwiązaniu wzorcowym (`solution/2a`). Rozwiązanie ma dodatkowo `order` (zadanie dodatkowe), `poolSlot` (pula zasobów do bloku 2.3) i `shopApi` zalogowany jako użytkownik workera; do kryteriów „gotowe” nie są potrzebne.
 - `packages/test-core/src/api-client.ts`: klient API. Potrzebne metody: `login`, `upsertUser`, `deleteUsers(prefix)`, `upsertProduct`, `deleteProducts(prefix)`. Tworzenie użytkowników i produktów wymaga zalogowania jako admin (`FIXED_ADMIN` z `seed.ts`).
 - `e2e/shop/playwright.config.ts`: ustawia `E2E_RUN_ID` w procesie głównym (numer buildu na CI, znacznik czasu lokalnie). Workery dziedziczą go przez `process.env`, więc wszystkie mają ten sam `runId`. Gdyby każdy worker liczył `Date.now()` sam, każdy miałby inny.
 - Sklep trzyma sesję w ciasteczku `sid`. Token z `api.login(...)` zapisany jako `storageState` zastępuje formularz logowania.
@@ -38,9 +38,9 @@ PowerShell, z katalogu głównego repo.
    cp packages/test-core/src/fixtures.skeleton.ts packages/test-core/src/fixtures.ts && pnpm typecheck
    ```
    Typecheck przechodzi. Dopóki `TODO 1` nie jest uzupełnione, każdy test z `page` pada z komunikatem `TODO 1: prefiks "" nie zaczyna się od "e2e_"`. To bezpiecznik: pusty prefiks w sprzątaniu usunąłby wszystkie produkty i konta.
-3. **Uzupełnij `TODO 1`–`TODO 5`** w `packages/test-core/src/fixtures.ts`.
+3. **Uzupełnij `TODO 1`–`TODO 6`** w `packages/test-core/src/fixtures.ts`.
 4. **Przepisz `e2e/shop/tests/cart.spec.ts`** tak, żeby:
-   - test dostawał produkt z fixture `product`, a `page` była zalogowana przez `storageState` workera,
+   - test dostawał produkt z fixture `product` (test z dwoma produktami: z `products`), a `page` była zalogowana przez `storageState` workera,
    - nie było `beforeAll`, `beforeEach`, `afterEach` ani `try/finally` do danych,
    - nie było literału z nazwą produktu ani SQL.
 5. **Uruchom kryteria „gotowe”** w podanej kolejności.
@@ -101,7 +101,7 @@ Kryteria dotyczą tylko `cart.spec.ts`. `orders.spec.ts` i `admin.spec.ts` zosta
    ```powershell
    pnpm --filter e2e-shop exec playwright test --workers=4 --repeat-each=2
    ```
-2. Fixture `order` dla `e2e/backoffice` z tym samym prefiksem (numer zamówienia `<prefix>ORD-...`, sprzątanie przez `backofficeApi.deleteOrders(prefix)`).
+2. Fixture `order` w `packages/test-core/src/fixtures.ts`: zamówienie użytkownika workera na `product`, numer `<prefix>ORD-...` (`placeOrder` wymaga klienta API zalogowanego jako `workerUser`). Użyj go w `e2e/backoffice/tests/orders.spec.ts`. Sprzątanie: czy potrzebne, skoro zamówienie znika kaskadowo z produktem i z użytkownikiem workera? Gdy nie, `backofficeApi.deleteOrders(prefix)` jest pod ręką.
 
 ## Artefakt do zabrania
 
