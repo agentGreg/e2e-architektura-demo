@@ -8,6 +8,7 @@
 | 2.3 | [cw23-przypadek-z-sali.md](cw23-przypadek-z-sali.md): zasób wyłączny, drabina decyzyjna | bez kodu | `solution/2a` (`poolSlot`, `lock`) |
 | 3.1 | [cw3a-skill-analiza-buildu.md](cw3a-skill-analiza-buildu.md): skill zespołowy i profil projektu | `main` (szkielet `tooling/claude-plugins/qa-standards/skills/analiza-buildu/SKILL.skeleton.md`) | `solution/3a` |
 | 3.2 | [cw3b-marketplace-lokalny.md](cw3b-marketplace-lokalny.md): plugin w marketplace, wersja i aktualizacja | `main` z własnym skillem z 3A albo `solution/3a` | `solution/3b` |
+| extra | [../przyklady/playwright-test-agents.md](../przyklady/playwright-test-agents.md): Playwright Test Agents piszą testy koszyka, dwa seedy, healer; dyskusja, co agent może robić sam | `extra/test-agents` | wyniki na tej gałęzi |
 
 Ćwiczenie 1 (podział i ADR) jest na kartkach; bez papieru otwórz tylko swoją kartkę z [cw1-karty/](cw1-karty/README.md). Szablon ADR: [../szablony/adr.md](../szablony/adr.md).
 
