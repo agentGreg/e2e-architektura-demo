@@ -9,8 +9,7 @@ if (!ok) {
   console.error(
     `\nZa stara wersja Node: ${process.versions.node}. Repo wymaga Node >= ${REQUIRED.join('.')} ` +
       `(wbudowany modul node:sqlite).\n` +
-      `Zainstaluj Node 24 LTS (https://nodejs.org) albo uzyj przenosnego Node z paczki offline ` +
-      `(README, sekcja "Paczka offline").\n`,
+      `Zainstaluj Node 24 LTS (https://nodejs.org) albo popros dzial IT o aktualizacje.\n`,
   );
   process.exit(1);
 }
