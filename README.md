@@ -11,7 +11,7 @@ e2e/shop             testy sklepu; examples/ = trzy warianty jednego testu; demo
 e2e/backoffice       testy backoffice
 tooling/claude-plugins/qa-standards   plugin Claude Code (marketplace `qa-sekcja` w .claude-plugin/)
 docs/                ADR, ćwiczenia, szablony, karty wymagań (pipeline, IT), szablon profilu projektu
-scripts/             uruchamianie aplikacji, reset bazy, sharding, scalanie raportów, paczka offline
+scripts/             uruchamianie aplikacji, reset bazy, sharding, scalanie raportów
 ```
 
 Gałęzie:
@@ -104,17 +104,5 @@ npm config set https-proxy $env:HTTPS_PROXY
 npm config set cafile C:\certs\firma-ca.pem
 ```
 
-Pobranie przeglądarek przez proxy: `pnpm exec playwright install chromium` używa `HTTPS_PROXY`. Gdy nie ma dostępu do GitHuba ani npm: paczka offline.
+Pobranie przeglądarek przez proxy: `pnpm exec playwright install chromium` używa `HTTPS_PROXY`. Gdy nie ma dostępu do GitHuba ani npm, pracujesz w parze na laptopie, na którym środowisko działa.
 
-## Paczka offline
-
-Trener ma pendrive z zipem: repo + `node_modules` + przeglądarki. Rozpakuj do `C:\e2e`, w PowerShell:
-
-```powershell
-$env:PLAYWRIGHT_BROWSERS_PATH = "C:\e2e\ms-playwright"
-cd C:\e2e\e2e-architektura-demo
-corepack enable
-pnpm test:smoke
-```
-
-Skrypt budujący paczkę: `pnpm offline:pack` (szczegóły w `scripts/offline-pack.mjs`).
