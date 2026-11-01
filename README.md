@@ -64,7 +64,7 @@ pnpm --filter e2e-shop exec playwright test --workers=4 --repeat-each=2   # koli
 pnpm --filter e2e-shop exec playwright test --ui
 pnpm db:reset                  # świeża baza (przy zatrzymanych aplikacjach)
 pnpm seed:check                # czy po testach zostały dane z prefiksem e2e_
-pnpm test:shard                # 2 shardy + bloby; potem pnpm report:merge
+pnpm test:shard                # na solution/2a: 2 shardy + bloby (--total 3: trzy); potem pnpm report:merge
 pnpm typecheck
 ```
 
