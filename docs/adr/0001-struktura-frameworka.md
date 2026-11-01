@@ -4,7 +4,7 @@ Data: 2026-11-02. Status: przyjęty (repo demo; w projekcie uczestnika do dokoń
 
 ## Kontekst
 
-Osiem projektów, każdy z własnym repo testowym, własnym POM i własnymi helperami (65 plików w jednym z nich, 1100 linii w page objekcie w innym). Ta sama zmiana (nowy nagłówek, nowy przepływ logowania) jest robiona osiem razy. Dane testowe sprzątane ręcznie w `afterEach` w siedmiu plikach. Nikt nie współdzieli kodu między projektami.
+Wiele projektów, każdy z własnym repo testowym, własnym POM i własnymi helperami (rozbudowane page objecty i katalogi helperów). Ta sama zmiana (nowy nagłówek, nowy przepływ logowania) jest robiona osobno w każdym repo. Dane testowe sprzątane ręcznie w `afterEach` w wielu plikach. Nikt nie współdzieli kodu między projektami.
 
 ## Decyzja
 

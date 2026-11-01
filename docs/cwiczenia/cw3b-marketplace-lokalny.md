@@ -13,7 +13,8 @@ Przy okazji widzisz różnicę, która decyduje o tym, jak sekcja będzie dostar
 
 ## Materiał wejściowy
 
-- Klon repo demo z Twoim skillem `analiza-buildu` z ćwiczenia 3A w `tooling/claude-plugins/qa-standards/skills/` (albo gałąź `solution/3a`).
+- Klon repo demo na gałęzi `main` z Twoim skillem `analiza-buildu` z ćwiczenia 3A w `tooling/claude-plugins/qa-standards/skills/` albo na gałęzi `solution/3a`.
+- Raporty z generatora z ćwiczenia 3A: `e2e/shop/demo-runs/` i `e2e/backoffice/demo-runs/` (`pnpm demo:failures`). Git ich nie śledzi, więc zostają po zmianie gałęzi; jeśli ich nie masz, uruchom generator przed krokiem 4.
 - `.claude-plugin/marketplace.json` w katalogu głównym repo: marketplace `qa-sekcja`, plugin `qa-standards` ze źródłem `./tooling/claude-plugins/qa-standards`.
 - `tooling/claude-plugins/qa-standards/.claude-plugin/plugin.json`: `"version": "0.2.0"`.
 - `tooling/claude-plugins/qa-standards/CHANGELOG.md` z zasadą semver sekcji.
@@ -60,26 +61,27 @@ Wszystkie polecenia w PowerShell, z katalogu głównego klonu repo demo.
 4. **Uruchomienie skilla z marketplace’u.** Otwórz sesję `claude` w katalogu głównym repo i wpisz `/qa-standards:analiza-buildu e2e/shop/demo-runs/failed`.
 5. **Zmiana bez wersji.** Dopisz do `references/kategorie.md` nowy sygnał (np. dla kategorii „środowisko”). W otwartej sesji wpisz `/reload-plugins` i uruchom skill ponownie. Zmiana działa, choć `version` się nie zmienił.
 6. **Wydanie wersji 0.3.0.** Wybierz jedną drogę:
-   - **własna zmiana:** w `plugin.json` zmień `"version": "0.2.0"` na `"0.3.0"`, w `CHANGELOG.md` dopisz `## 0.3.0` (co się zmieniło i dlaczego minor: nowy skill), potem
+   - **własna zmiana:** w `plugin.json` zmień `"version": "0.2.0"` na `"0.3.0"`. W `CHANGELOG.md` dodaj sekcję `## 0.3.0` (na `solution/3a` zmień nagłówek `## Niewydane (ćwiczenie 3A)` na `## 0.3.0`) i dopisz uzasadnienie: minor, bo nowy skill. Potem
      ```powershell
      claude plugin validate .
      git add -A
      git commit -m "qa-standards 0.3.0: skill analiza-buildu"
      ```
-   - **gotowa wersja:** `git switch solution/3b` (najpierw zatwierdź albo odłóż własne zmiany: `git stash`).
+   - **gotowa wersja:** `git switch solution/3b` (najpierw zatwierdź albo odłóż własne zmiany: `git stash`). Zmiana `references/kategorie.md` z kroku 5 zostaje wtedy w schowku, więc kryterium 3 sprawdzasz po kroku 5, przed krokiem 6.
 7. **Aktualizacja u siebie**
    ```powershell
    claude plugin marketplace update qa-sekcja
    claude plugin update qa-standards@qa-sekcja
    claude plugin list
    ```
-   Oczekiwany wynik `update`: `Plugin "qa-standards" updated from 0.2.0 to 0.3.0 for scope user. Restart to apply changes.` Nowa wersja ładuje się w następnej sesji albo po `/reload-plugins`.
+   Oczekiwany wynik `update`: `Plugin "qa-standards" updated from 0.2.0 to 0.3.0 for scope user. Restart to apply changes.` Nowa wersja ładuje się w następnej sesji albo po `/reload-plugins`. W sesji z nową wersją uruchom skill dla obu raportów: `/qa-standards:analiza-buildu e2e/shop/demo-runs/failed`, potem `/qa-standards:analiza-buildu e2e/backoffice/demo-runs/failed`.
 8. **Podgląd szczegółów:** `claude plugin list --json`. Porównaj pola `version` (zapisana przy instalacji albo aktualizacji) i `folderVersion` (odczytana z katalogu). Po `git switch main` `folderVersion` wraca do 0.2.0, bo plugin jest czytany z bieżących plików klonu.
 9. **Sprzątanie po ćwiczeniu** (marketplace sekcji dodasz później z Azure Repos):
    ```powershell
    claude plugin marketplace remove qa-sekcja
+   git restore .claude/settings.json
    ```
-   Polecenie usuwa marketplace i odinstalowuje jego pluginy.
+   (W bash te same polecenia.) `marketplace remove` usuwa marketplace i odinstalowuje jego pluginy, a przy okazji usuwa deklarację `qa-sekcja` z zatwierdzonego w repo `.claude/settings.json`, dlatego `git restore` przywraca plik.
 
 ## Co działa na każdym koncie, a co wymaga administratora
 
@@ -101,7 +103,7 @@ Auto-update w tle wymaga poświadczeń git, które odpowiadają bez pytania (Git
 
 1. `claude plugin validate .` kończy się `✔ Validation passed`.
 2. `claude plugin list` pokazuje `qa-standards@qa-sekcja` w wersji 0.3.0.
-3. `/qa-standards:analiza-buildu` zainstalowany z marketplace’u działa dla raportu sklepu i backoffice, a po kroku 5 korzysta ze zmienionego `references/kategorie.md`.
+3. `/qa-standards:analiza-buildu` zainstalowany z marketplace’u działa dla raportu sklepu i backoffice (kroki 4 i 7), a po kroku 5, przed krokiem 6, korzysta ze zmienionego `references/kategorie.md`.
 4. `CHANGELOG.md` ma wpis 0.3.0 z uzasadnieniem rodzaju zmiany.
 5. Umiesz powiedzieć, dlaczego w kroku 5 zmiana zadziałała bez nowej wersji i dlaczego w marketplace z Azure Repos użytkownicy nie dostaliby jej bez podbicia `version`.
 
