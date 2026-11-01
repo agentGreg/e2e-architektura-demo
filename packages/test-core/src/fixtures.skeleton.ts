@@ -1,7 +1,9 @@
 // Szkielet do ćwiczenia 2A (instrukcja: docs/cwiczenia/cw2a-fixtures-dane.md).
 // Start ćwiczenia: skopiuj ten plik na fixtures.ts (nadpisz) i uzupełnij miejsca TODO.
 //
-// Nazwy fixtures są takie same jak w rozwiązaniu wzorcowym (gałąź solution/2a).
+// Fixtures z tego pliku mają te same nazwy co w rozwiązaniu wzorcowym (gałąź solution/2a).
+// Rozwiązanie ma dodatkowo `order` (zadanie dodatkowe), `poolSlot` (pula zasobów, materiał
+// do 2.3) i `shopApi` zalogowany jako workerUser; do kryteriów „gotowe” nie są potrzebne.
 // Fixtures z pliku "przed" (db, shopApi, backofficeApi) zostają bez zmian: używają ich
 // orders.spec.ts, admin.spec.ts i testy backoffice, których w tym ćwiczeniu nie przepisujesz.
 import { test as base } from '@playwright/test';
@@ -30,6 +32,8 @@ export interface TestFixtures {
   // Nowe.
   /** Świeży produkt dla jednego testu. */
   product: Product;
+  /** Dwa świeże produkty dla jednego testu. */
+  products: [Product, Product];
 }
 
 export const test = base.extend<TestFixtures, WorkerFixtures>({
@@ -117,6 +121,17 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
     await use(product);
     // TODO 5: sprzątanie tego produktu po teście. Czy jest potrzebne, skoro
     //         workerUser sprząta cały prefiks? Kiedy tak, kiedy nie?
+  },
+
+  products: async ({ prefix, adminApi }, use) => {
+    // TODO 6: dwa różne produkty (test „dwa różne produkty dają dwie pozycje”).
+    //         Nazwy jak w TODO 4; dziś obie są równe, więc upsert zwraca ten sam produkt.
+    //         Sprzątanie jak w TODO 5.
+    const pair: [Product, Product] = [
+      await adminApi.upsertProduct({ name: `${prefix}`, stock: 10 }),
+      await adminApi.upsertProduct({ name: `${prefix}`, stock: 10 }),
+    ];
+    await use(pair);
   },
 });
 
