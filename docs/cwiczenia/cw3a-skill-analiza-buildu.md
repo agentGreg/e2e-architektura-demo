@@ -41,17 +41,17 @@ Kolejność to priorytet, gdy pasują dwie: wyżej wygrywa.
 | uprawnienia | 401/403, „Brak uprawnień”, przekierowanie na logowanie w środku testu | właściwa rola przez `storageState` |
 | uszkodzone dane | dane wyjściowe inne niż seed już na początku testu; pada też na 1 workerze | odtworzenie danych bazowych, seed idempotentny |
 | kolizja danych | wartość o 1–2 inna od oczekiwanej, „już anulowane”, „nie znaleziono”; zielony na 1 workerze, czerwony na N | dane per worker (prefiks), `lock`, projekt `workers: 1` |
-| flaky | `waitForTimeout`, krótki `timeout`, wynik `flaky` (przeszedł po retry); mieszane wyniki przy `--repeat-each` na 1 workerze | asercja z auto-wait, kwarantanna z właścicielem |
-| bug | ta sama porażka w każdej próbie, także na 1 workerze; aplikacja liczy źle, błąd 500 | zgłoszenie do deweloperów z trace |
+| flaky | `waitForTimeout` albo stały czas w teście, krótki `timeout`; mieszane wyniki przy `--repeat-each` na 1 workerze. Status `flaky` (przeszedł po retry) tylko wtedy, gdy retry trafi w dobry moment: `flaky.spec.ts` pada w ok. 80 % prób, więc zwykle kończy jako `unexpected` | asercja z auto-wait, kwarantanna z właścicielem |
+| bug | ta sama porażka we wszystkich powtórzeniach, także na 1 workerze i po retry; aplikacja liczy źle, błąd 500 | zgłoszenie do deweloperów z trace |
 
-Reguła porównania prób: test zielony w próbie udanej (1 worker) i czerwony w nieudanej (N workerów) to kolizja danych albo flaky. Czerwony w obu to bug, uprawnienia, dane albo środowisko. Status `flaky` w raporcie sam niczego nie rozstrzyga: przy retry kolizja też go dostaje. Odróżnisz ją po danych (nazwy bez prefiksu workera, wartości „o 1 za dużo”) i po tym, że test jest stabilny na 1 workerze.
+Reguła porównania prób: test zielony w próbie udanej (1 worker), a w nieudanej (N workerów) z wynikami mieszanymi (część powtórzeń albo retry przechodzi) to kolizja danych albo flaky. Test, który w nieudanej padł we wszystkich powtórzeniach także po retry, to bug, uprawnienia, dane albo środowisko, nawet gdy w próbie udanej był zielony: między próbami zmieniła się aplikacja (w generatorze próba nieudana biegnie z `SHOP_BUG_TOTAL=1`, dlatego `bug.spec.ts` jest zielony w `ok`). Testów z tagiem `@demo-red` (flaky, uprawnienia, środowisko) w próbie udanej nie ma (`parse-report.mjs` pisze „brak tego testu”); o ich kategorii rozstrzygają sygnały z tabeli. Status `flaky` w raporcie sam niczego nie rozstrzyga: przy retry kolizja też go dostaje. Odróżnisz ją po danych (nazwy bez prefiksu workera, wartości „o 1 za dużo”) i po tym, że test jest stabilny na 1 workerze.
 
 ## Szkielet SKILL.md
 
 Plik `tooling/claude-plugins/qa-standards/skills/analiza-buildu/SKILL.skeleton.md` w repo. Ma frontmatter i pięć kroków; miejsca do uzupełnienia oznaczone `TODO`:
 
 1. Profil projektu: które pola profilu są potrzebne w dalszych krokach.
-2. Zbierz porażki: jak dostać listę porażek z `results.json` / `junit.xml` i wynik tego samego testu w próbie udanej. Nie czytaj `results.json` w całości: to dziesiątki tysięcy linii.
+2. Zbierz porażki: jak dostać listę porażek z `results.json` / `junit.xml` i wynik tego samego testu w próbie udanej. Nie czytaj `results.json` w całości: to kilka tysięcy linii (w generatorze 2500–3900 linii, 120–230 KB).
 3. Dowody per porażka: czego szukać (lista sygnałów).
 4. Klasyfikacja: reguła rozstrzygania, gdy pasują dwie kategorie.
 5. Wynik: tabela `test | kategoria | dowód | działanie | właściciel` (gotowe, bez `TODO`).
@@ -169,14 +169,15 @@ Katalog skilla `analiza-buildu/` (warstwa wspólna) i profil projektu. Skill jes
 
 Repo demo, gałąź `solution/3a`:
 
-- `SKILL.md` (57 linii): pięć kroków (profil, porażki ze skryptu, dowody, klasyfikacja, wynik). Szuka profilu od katalogu raportu w górę, więc jeden skill uruchomiony z katalogu głównego obsługuje oba projekty.
+- `SKILL.md` (64 linie): pięć kroków (profil, porażki ze skryptu, dowody, klasyfikacja, wynik). Szuka profilu od katalogu raportu w górę, więc jeden skill uruchomiony z katalogu głównego obsługuje oba projekty.
 - `references/kategorie.md`: kategorie z kolumnami „sygnały”, „jak potwierdzić”, „działanie”, „typowy właściciel” i kolejnością priorytetu.
-- `references/trace.md`: jak wypisać akcje z `trace.zip` bez UI i porównać próby.
-- `scripts/parse-report.mjs`: czyta `results.json` albo `junit.xml`, grupuje powtórzenia, podaje pierwszą linię błędu, ścieżki trace i `error-context.md` oraz wynik w próbie udanej. Działa też bez Claude:
+- `references/trace.md`: jak wypisać kroki, błędy i odpowiedzi HTTP z `trace.zip` bez UI (`test.trace` i `<n>-trace.network` w formacie Playwright 1.64) i porównać próby.
+- `scripts/parse-report.mjs`: czyta `results.json` albo `junit.xml`, grupuje powtórzenia, podaje wyniki powtórzeń, pierwszą linię błędu, ścieżki trace i `error-context.md` z pierwszej nieudanej próby (także dla testów `flaky`) oraz wynik w próbie udanej. Działa też bez Claude:
   ```powershell
   node tooling/claude-plugins/qa-standards/skills/analiza-buildu/scripts/parse-report.mjs e2e/shop/demo-runs/failed
   ```
-- Profile `e2e/shop/.claude/test-profile.md` i `e2e/backoffice/.claude/test-profile.md`: różnią się adresem, kontami, zasobami wyłącznymi (tryb konserwacji tylko w backoffice) i właścicielami.
+- Raport z pipeline’u w postaci blobów: `SKILL.md` ma w `allowed-tools` `Bash(npx playwright merge-reports *)` i najpierw scala bloby do `results.json`.
+- Profile `e2e/shop/.claude/test-profile.md` i `e2e/backoffice/.claude/test-profile.md`: różnią się adresem, kontami, zasobami wyłącznymi (tryb konserwacji: w backoffice testy, które go przełączają pod `lock`, w sklepie zasób, który blokuje zakupy, gdy włączy go backoffice) i właścicielami.
 
 ```powershell
 git diff main origin/solution/3a -- tooling e2e/shop/.claude e2e/backoffice/.claude
