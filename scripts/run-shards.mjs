@@ -8,13 +8,16 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const args = process.argv.slice(2);
+// Opcje skryptu są przed `--`. Wygrywa ostatnie wystąpienie, więc `pnpm test:shard --total 3 --app backoffice`
+// nadpisuje `--total 2 --app shop` wpisane w package.json.
+const own = args.includes('--') ? args.slice(0, args.indexOf('--')) : args;
 const opt = (name, def) => {
-  const i = args.indexOf(name);
-  return i >= 0 ? args[i + 1] : def;
+  const i = own.lastIndexOf(name);
+  return i >= 0 ? own[i + 1] : def;
 };
 const total = Number(opt('--total', 2));
 const app = opt('--app', 'shop');
-const sequential = args.includes('--sequential');
+const sequential = own.includes('--sequential');
 const extra = args.includes('--') ? args.slice(args.indexOf('--') + 1) : [];
 
 const e2eDir = path.join(root, 'e2e', app);
