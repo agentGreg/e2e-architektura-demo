@@ -19,6 +19,11 @@ Historia gałęzi jest częścią materiału: osobne commity dla planu i testów
 
 ## Uruchomienie
 
+0. Zainstaluj Playwright test agents:
+```
+npx playwright init-agents --loop=claude
+```
+
 ```powershell
 git switch extra/test-agents
 pnpm install
